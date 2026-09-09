@@ -62,8 +62,8 @@ interface Slide {
   content: React.ReactNode;
 }
 
-const TEAM_NAME = 'Team WeatherGPT';
-const TEAM_ID = '[Team ID]';
+const TEAM_NAME = 'MEGHDOOT';
+const TEAM_ID = 'SIH26068';
 const TEAM_MEMBERS = [
   'Harsh Bhanandari',
   'Tushar Sati',

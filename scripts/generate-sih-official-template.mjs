@@ -18,8 +18,8 @@ const PS_TITLE = 'WeatherGPT: Conversational AI for Weather Forecasting, Alerts,
 const THEME = 'Disaster Management';
 const CATEGORY = 'Software';
 const ORG = 'Ministry of Earth Sciences (MoES) / India Meteorological Department (IMD)';
-const TEAM_NAME = 'Team WeatherGPT';
-const TEAM_ID = '[Team ID / Registered ID]';
+const TEAM_NAME = 'MEGHDOOT';
+const TEAM_ID = 'SIH26068';
 const TEAM_MEMBERS = [
   'Harsh Bhanandari',
   'Tushar Sati',
