@@ -6,6 +6,7 @@ import {
   GetWeatherAlertsResponse,
   GetWeatherOverviewResponse,
 } from "@workspace/api-zod";
+import { findMatchingIndianState } from "../lib/india-states";
 
 const router: IRouter = Router();
 
@@ -258,7 +259,57 @@ router.post("/weather/chat", (req, res) => {
       rawMsg
     );
 
-  if (isAgri) {
+  const stateMatch = findMatchingIndianState(rawMsg);
+
+  if (stateMatch) {
+    let answer = "";
+    switch (lang) {
+      case "hi":
+        answer = `${stateMatch.hindiName} (${stateMatch.capital}, भारत) में वर्तमान तापमान ${stateMatch.temperature}°C है और मौसम '${stateMatch.condition}' बना हुआ है। बारिश की संभावना ${stateMatch.rainChance}% तथा हवा की गति ${stateMatch.windSpeed} किमी/घंटा है। ${stateMatch.alert ? `चेतावनी: ${stateMatch.alert}। ` : ""}${stateMatch.advisory.body}`;
+        break;
+      case "mr":
+        answer = `${stateMatch.name} (${stateMatch.capital}, भारत) मध्ये सध्या तापमान ${stateMatch.temperature}°C असून '${stateMatch.condition}' हवामान आहे। पावसाची शक्यता ${stateMatch.rainChance}% आणि आर्द्रता ${stateMatch.humidity}% आहे। ${stateMatch.advisory.body}`;
+        break;
+      case "bn":
+        answer = `${stateMatch.name} (${stateMatch.capital}, ভারত)-এ বর্তমান তাপমাত্রা ${stateMatch.temperature}°C এবং আবহাওয়া '${stateMatch.condition}'। বৃষ্টির সম্ভাবনা ${stateMatch.rainChance}% এবং আর্দ্রতা ${stateMatch.humidity}%। ${stateMatch.advisory.body}`;
+        break;
+      case "ta":
+        answer = `${stateMatch.name} (${stateMatch.capital}, இந்தியா) பகுதியில் தற்போதைய வெப்பநிலை ${stateMatch.temperature}°C மற்றும் வானிலை '${stateMatch.condition}' ஆக உள்ளது. மழை வாய்ப்பு ${stateMatch.rainChance}%. ${stateMatch.advisory.body}`;
+        break;
+      case "te":
+        answer = `${stateMatch.name} (${stateMatch.capital}, భారతదేశం) లో ప్రస్తుత ఉష్ణోగ్రత ${stateMatch.temperature}°C మరియు వాతావరణం '${stateMatch.condition}' గా ఉంది. వర్షం సంభావ్యత ${stateMatch.rainChance}%. ${stateMatch.advisory.body}`;
+        break;
+      case "gu":
+        answer = `${stateMatch.name} (${stateMatch.capital}, ભારત) માં વર્તમાન તાપમાન ${stateMatch.temperature}°C છે અને હવામાન '${stateMatch.condition}' છે. વરસાદની શક્યતા ${stateMatch.rainChance}% છે. ${stateMatch.advisory.body}`;
+        break;
+      case "kn":
+        answer = `${stateMatch.name} (${stateMatch.capital}, ಭಾರತ) ನಲ್ಲಿ ಪ್ರಸ್ತುತ ತಾಪಮಾನ ${stateMatch.temperature}°C ಮತ್ತು ಹವಾಮಾನ '${stateMatch.condition}' ಆಗಿದೆ. ಮಳೆಯ ಸಂಭವನೀಯತೆ ${stateMatch.rainChance}%. ${stateMatch.advisory.body}`;
+        break;
+      case "ml":
+        answer = `${stateMatch.name} (${stateMatch.capital}, ഇന്ത്യ) ൽ നിലവിലെ താപനില ${stateMatch.temperature}°C ഉം കാലാവസ്ഥ '${stateMatch.condition}' ഉം ആണ്. മഴ സാധ്യത ${stateMatch.rainChance}%. ${stateMatch.advisory.body}`;
+        break;
+      case "pa":
+        answer = `${stateMatch.name} (${stateMatch.capital}, ਭਾਰਤ) ਵਿੱਚ ਮੌਜੂਦਾ ਤਾਪਮਾਨ ${stateMatch.temperature}°C ਹੈ ਅਤੇ ਮੌਸਮ '${stateMatch.condition}' ਹੈ। ਮੀਂਹ ਦੀ ਸੰਭਾਵਨਾ ${stateMatch.rainChance}% ਹੈ। ${stateMatch.advisory.body}`;
+        break;
+      default:
+        answer = `In ${stateMatch.name}, ${stateMatch.country} (Capital: ${stateMatch.capital}), current conditions are ${stateMatch.temperature}°C and ${stateMatch.condition.toLowerCase()}. Rain probability is ${stateMatch.rainChance}% with humidity around ${stateMatch.humidity}% and winds at ${stateMatch.windSpeed} km/h. ${stateMatch.alert ? `Active IMD Alert: ${stateMatch.alert}. ` : ""}${stateMatch.advisory.body}`;
+        break;
+    }
+
+    response = {
+      answer,
+      intent: "state-forecast",
+      source: `IMD & Open-Meteo · Regional Meteorological Centre (${stateMatch.region} India)`,
+      location: `${stateMatch.name}, ${stateMatch.country}`,
+      highlights: [
+        `${stateMatch.temperature}°C · ${stateMatch.condition}`,
+        `${stateMatch.rainChance}% Rain Probability`,
+        `AQI: ${stateMatch.aqi}`,
+        `Capital: ${stateMatch.capital}`,
+      ],
+      advisory: stateMatch.advisory,
+    };
+  } else if (isAgri) {
     switch (lang) {
       case "hi":
         response = {

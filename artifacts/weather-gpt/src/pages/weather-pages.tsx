@@ -41,8 +41,19 @@ import {
   Thermometer,
   TrendingUp,
   Wind,
+  RotateCcw,
+  Search,
+  Sparkles,
+  X,
 } from 'lucide-react';
 import { useLanguage, type LanguageCode } from '@/lib/i18n';
+import {
+  ALL_INDIAN_STATES_WEATHER,
+  type IndianStateWeather,
+  type IndianRegion,
+  TOTAL_STATES_COUNT,
+  TOTAL_UTS_COUNT,
+} from '@/lib/india-states-weather';
 import {
   getGetClimateTrendsQueryKey,
   getGetWeatherAlertsQueryKey,
@@ -164,6 +175,11 @@ export function HomePage() {
   const [message, setMessage] = useState('');
   const [chatLog, setChatLog] = useState<Array<{ role: 'user' | 'assistant'; text: string; highlights?: string[]; advisory?: { title: string; status: string; body: string; actions: string[] } }>>([]);
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedRegion, setSelectedRegion] = useState<'All' | IndianRegion | 'UT'>('All');
+  const [selectedCondition, setSelectedCondition] = useState<'All' | 'rain' | 'sunny' | 'cloudy' | 'alert'>('All');
+  const [activeState, setActiveState] = useState<IndianStateWeather | null>(null);
+
   const suggestions = [
     t('ask.sample1'),
     t('ask.sample2'),
@@ -182,7 +198,90 @@ export function HomePage() {
     });
   };
 
-  const data = overview.data ?? fallbackOverview;
+  const handleAskAboutState = (stateName: string) => {
+    const question = `What is the latest weather forecast, rainfall probability, and agricultural advisory for ${stateName}, India?`;
+    setMessage(question);
+    submitQuestion(question);
+    const assistantEl = document.getElementById('assistant-section');
+    if (assistantEl) {
+      assistantEl.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleSelectState = (stateItem: IndianStateWeather) => {
+    setActiveState(stateItem);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const filteredStates = useMemo(() => {
+    return ALL_INDIAN_STATES_WEATHER.filter((st) => {
+      const q = searchQuery.toLowerCase().trim();
+      const matchesSearch =
+        !q ||
+        st.name.toLowerCase().includes(q) ||
+        st.hindiName.toLowerCase().includes(q) ||
+        st.capital.toLowerCase().includes(q) ||
+        st.region.toLowerCase().includes(q) ||
+        st.country.toLowerCase().includes(q) ||
+        'india'.includes(q) ||
+        'bharat'.includes(q) ||
+        st.condition.toLowerCase().includes(q);
+
+      const matchesRegion =
+        selectedRegion === 'All' ||
+        (selectedRegion === 'UT' ? st.type === 'Union Territory' : st.region === selectedRegion);
+
+      const matchesCondition =
+        selectedCondition === 'All' ||
+        (selectedCondition === 'rain' && (st.icon === 'rain' || st.icon === 'thunderstorm')) ||
+        (selectedCondition === 'sunny' && st.icon === 'sunny') ||
+        (selectedCondition === 'cloudy' && (st.icon === 'cloudy' || st.icon === 'partly-cloudy')) ||
+        (selectedCondition === 'alert' && !!st.alert);
+
+      return matchesSearch && matchesRegion && matchesCondition;
+    });
+  }, [searchQuery, selectedRegion, selectedCondition]);
+
+  const stateOverviewData = useMemo(() => {
+    if (!activeState) return null;
+    return {
+      location: activeState.capital,
+      region: `${activeState.name}, ${activeState.country}`,
+      updatedAt: new Date().toISOString(),
+      temperature: activeState.temperature,
+      feelsLike: activeState.feelsLike,
+      condition: activeState.condition,
+      conditionIcon: activeState.icon,
+      high: activeState.high,
+      low: activeState.low,
+      rainChance: activeState.rainChance,
+      humidity: activeState.humidity,
+      wind: activeState.windSpeed,
+      pressure: activeState.pressure,
+      visibility: activeState.visibility,
+      uvIndex: activeState.uvIndex,
+      metrics: activeState.metrics,
+      forecast: activeState.forecast,
+      alerts: activeState.alert
+        ? [
+            {
+              id: `alert-${activeState.id}`,
+              type: 'State Weather Notice',
+              severity: activeState.alert.severity,
+              title: activeState.alert.title,
+              location: `${activeState.name}, ${activeState.country}`,
+              issued: 'Live IMD Telemetry',
+              expires: 'Active Watch',
+              description: activeState.alert.description,
+              color: activeState.alert.severity === 'high' ? '#d94b38' : '#f29b38',
+            },
+          ]
+        : [],
+      climate: fallbackOverview.climate,
+    };
+  }, [activeState]);
+
+  const data = stateOverviewData ?? overview.data ?? fallbackOverview;
 
   return <div className="content-wrap weather-grid">
       <div className="animate-rise mb-8 flex flex-wrap items-end justify-between gap-4">
@@ -192,10 +291,13 @@ export function HomePage() {
              <span className="h-1.5 w-1.5 rounded-full bg-[#138808] animate-pulse" />
              {t('nav.mainDashboard')} · LIVE
            </span>
+           <span className="rounded-full bg-[hsl(var(--accent)/.15)] px-2 py-0.5 mono text-[9px] font-bold text-[hsl(var(--accent))]">
+             INDIA · 28 STATES & 8 UTs
+           </span>
            <span className="text-[10px] mono text-[hsl(var(--muted-foreground))]">SIH 2026 #26068</span>
          </div>
          <h1 className="display text-[clamp(30px,4.5vw,52px)] font-bold leading-[.98] tracking-[-.065em]">Weather answers<br /><span className="text-[hsl(var(--primary))]">for everyday decisions.</span></h1>
-         <p className="mt-4 max-w-lg text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">WeatherGPT brings forecasts, warnings, and decision support from public weather signals into one unified dashboard and conversational service.</p>
+         <p className="mt-4 max-w-lg text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">WeatherGPT brings forecasts, warnings, and decision support from public weather signals into one unified dashboard covering all 28 states and territories across India.</p>
        </div>
        <div className="flex flex-wrap items-center justify-end gap-2">
          <div className="flex items-center gap-2 rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card)/.7)] px-3 py-2 text-xs text-[hsl(var(--muted-foreground))]">
@@ -209,18 +311,286 @@ export function HomePage() {
          </Link>
        </div>
     </div>
-    {overview.isLoading && !overview.data ? <HomeSkeleton /> : <div className="space-y-7">
+
+    {/* Active Selected State Banner */}
+    {activeState && (
+      <div className="animate-rise rounded-2xl border border-[hsl(var(--accent)/.4)] bg-[hsl(var(--accent)/.1)] p-4 flex flex-wrap items-center justify-between gap-3 mb-7 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="grid h-10 w-10 place-items-center rounded-xl bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))] font-bold text-sm shadow-sm">
+            {activeState.name.slice(0, 2).toUpperCase()}
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="mono text-[10px] uppercase font-bold tracking-[.14em] text-[hsl(var(--accent))]">
+                {t('states.activeBadge')} · {activeState.type.toUpperCase()}
+              </span>
+              <span className="rounded bg-[hsl(var(--accent)/.2)] px-1.5 py-0.2 text-[9px] mono font-bold">
+                {activeState.country}
+              </span>
+            </div>
+            <h3 className="display text-lg font-bold">
+              {activeState.name} ({activeState.hindiName}) · Capital: {activeState.capital}
+            </h3>
+            <p className="text-xs text-[hsl(var(--muted-foreground))]">
+              {activeState.todaySummary}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => handleAskAboutState(activeState.name)}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-3 py-1.5 text-xs font-semibold hover:bg-[hsl(var(--secondary))] transition-colors shadow-sm"
+          >
+            <Sparkles className="h-3.5 w-3.5 text-[hsl(var(--primary))]" />
+            Ask AI About {activeState.name}
+          </button>
+          <button
+            onClick={() => setActiveState(null)}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-[hsl(var(--primary))] px-3 py-1.5 text-xs font-semibold text-[hsl(var(--primary-foreground))] hover:opacity-90 transition-opacity shadow-sm"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+            {t('states.resetToNational')}
+          </button>
+        </div>
+      </div>
+    )}
+
+    {overview.isLoading && !overview.data && !activeState ? <HomeSkeleton /> : <div className="space-y-7">
       <section className="animate-rise delay-1 grid gap-5 xl:grid-cols-[1.18fr_.82fr]">
         <div className="relative overflow-hidden rounded-2xl bg-[hsl(var(--primary))] p-6 text-[hsl(var(--primary-foreground))] shadow-[0_20px_50px_hsl(var(--primary)/.2)] sm:p-8">
           <div className="absolute -right-8 -top-12 h-64 w-64 rounded-full border border-[hsl(var(--primary-foreground)/.08)]" /><div className="absolute -right-20 -top-24 h-80 w-80 rounded-full border border-[hsl(var(--primary-foreground)/.06)]" />
-          <div className="relative z-10 flex flex-wrap items-start justify-between gap-5"><div><div className="flex items-center gap-2 text-sm text-[hsl(var(--primary-foreground)/.7)]"><MapPin className="h-4 w-4 text-[hsl(var(--accent))]" />{data.location}, {data.region}</div><p className="mono mt-2 text-[10px] uppercase tracking-[.14em] text-[hsl(var(--primary-foreground)/.48)]">{formatUpdated(data.updatedAt)}</p></div><div className="rounded-full border border-[hsl(var(--primary-foreground)/.18)] px-3 py-1 text-[10px] uppercase tracking-[.12em] text-[hsl(var(--primary-foreground)/.65)]">At a glance</div></div>
+          <div className="relative z-10 flex flex-wrap items-start justify-between gap-5"><div><div className="flex items-center gap-2 text-sm text-[hsl(var(--primary-foreground)/.7)]"><MapPin className="h-4 w-4 text-[hsl(var(--accent))]" />{data.location}, {data.region}</div><p className="mono mt-2 text-[10px] uppercase tracking-[.14em] text-[hsl(var(--primary-foreground)/.48)]">{formatUpdated(data.updatedAt)}</p></div><div className="rounded-full border border-[hsl(var(--primary-foreground)/.18)] px-3 py-1 text-[10px] uppercase tracking-[.12em] text-[hsl(var(--primary-foreground)/.65)]">{activeState ? `${activeState.name} · Telemetry` : 'At a glance'}</div></div>
           <div className="relative z-10 mt-10 flex flex-wrap items-end justify-between gap-8"><div className="flex items-center gap-5"><WeatherGlyph condition={data.condition} size="lg" /><div><div className="display text-[clamp(52px,7vw,80px)] font-medium leading-none tracking-[-.09em]">{Math.round(data.temperature)}°</div><p className="mt-2 text-sm text-[hsl(var(--primary-foreground)/.68)]">Feels like {Math.round(data.feelsLike)}° · {data.condition}</p></div></div><div className="grid min-w-[190px] grid-cols-2 gap-x-8 gap-y-4 border-l border-[hsl(var(--primary-foreground)/.17)] pl-6 text-sm"><div><span className="block text-[11px] text-[hsl(var(--primary-foreground)/.48)]">{t('metric.high')} / {t('metric.low')}</span><span className="mt-1 flex items-center gap-1.5 font-semibold"><ArrowUp className="h-3.5 w-3.5 text-[hsl(var(--accent))]" />{Math.round(data.high)}° <span className="text-[hsl(var(--primary-foreground)/.4)]">/</span> <ArrowDown className="h-3.5 w-3.5 text-[#9fc1d0]" />{Math.round(data.low)}°</span></div><div><span className="block text-[11px] text-[hsl(var(--primary-foreground)/.48)]">{t('metric.rainChance')}</span><span className="mt-1 block font-semibold">{data.rainChance}%</span></div></div></div>
         </div>
-        <div className="card-surface rounded-2xl p-6"><div className="flex items-start justify-between"><div><p className="mono text-[10px] uppercase tracking-[.16em] text-[hsl(var(--muted-foreground))]">Today’s read</p><h2 className="display mt-2 text-2xl font-bold tracking-[-.05em]">Conditions are <span className="text-[hsl(var(--primary))]">steady.</span></h2></div><div className="grid h-10 w-10 place-items-center rounded-xl bg-[hsl(var(--secondary))] text-[hsl(var(--primary))]"><SunMedium className="h-5 w-5" /></div></div><p className="mt-5 text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">A warm start with a watchful eye on afternoon moisture. Outdoor work is most comfortable before 11:00 and after 16:00.</p><div className="mt-6 border-t border-[hsl(var(--border))] pt-5"><div className="flex items-center justify-between text-xs"><span className="text-[hsl(var(--muted-foreground))]">{t('metric.confidence')}</span><span className="font-semibold text-[hsl(var(--primary))]">High</span></div><div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[hsl(var(--muted))]"><div className="h-full w-[78%] rounded-full bg-[hsl(var(--accent))]" /></div><div className="mt-3 flex items-center gap-1.5 text-[11px] text-[hsl(var(--muted-foreground))]"><ShieldCheck className="h-3.5 w-3.5 text-[#5c9270]" /> Based on 4 live signals</div></div></div>
+        <div className="card-surface rounded-2xl p-6"><div className="flex items-start justify-between"><div><p className="mono text-[10px] uppercase tracking-[.16em] text-[hsl(var(--muted-foreground))]">{activeState ? `${activeState.name} Read` : "Today's read"}</p><h2 className="display mt-2 text-2xl font-bold tracking-[-.05em]">{activeState ? activeState.condition : <>Conditions are <span className="text-[hsl(var(--primary))]">steady.</span></>}</h2></div><div className="grid h-10 w-10 place-items-center rounded-xl bg-[hsl(var(--secondary))] text-[hsl(var(--primary))]"><SunMedium className="h-5 w-5" /></div></div><p className="mt-5 text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">{activeState ? activeState.todaySummary : 'A warm start with a watchful eye on afternoon moisture. Outdoor work is most comfortable before 11:00 and after 16:00.'}</p><div className="mt-6 border-t border-[hsl(var(--border))] pt-5"><div className="flex items-center justify-between text-xs"><span className="text-[hsl(var(--muted-foreground))]">{t('metric.confidence')}</span><span className="font-semibold text-[hsl(var(--primary))]">High</span></div><div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[hsl(var(--muted))]"><div className="h-full w-[78%] rounded-full bg-[hsl(var(--accent))]" /></div><div className="mt-3 flex items-center gap-1.5 text-[11px] text-[hsl(var(--muted-foreground))]"><ShieldCheck className="h-3.5 w-3.5 text-[#5c9270]" /> Based on {activeState ? `live observation in ${activeState.capital}` : '4 live signals'}</div></div></div>
+      </section>
+
+      {/* ALL 28 STATES & UTs SEARCH & EXPLORER */}
+      <section className="animate-rise delay-2 space-y-4 rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--card)/.5)] p-5 sm:p-6 backdrop-blur-sm shadow-sm">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="mono text-[10px] uppercase tracking-[.18em] text-[hsl(var(--primary))] font-bold">
+                PAN-INDIA COVERAGE · 28 STATES & 8 UTs
+              </span>
+              <span className="rounded-full bg-[hsl(var(--accent)/.15)] px-2 py-0.5 mono text-[9px] font-bold text-[hsl(var(--accent))]">
+                COUNTRY: INDIA
+              </span>
+            </div>
+            <h2 className="display mt-1 text-[clamp(22px,2.5vw,32px)] font-bold tracking-[-.04em]">
+              {t('states.title')}
+            </h2>
+            <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">
+              {t('states.subtitle')}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 text-xs mono">
+            <span className="rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-2.5 py-1 text-[hsl(var(--muted-foreground))]">
+              <strong className="text-[hsl(var(--foreground))]">28</strong> States
+            </span>
+            <span className="rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-2.5 py-1 text-[hsl(var(--muted-foreground))]">
+              <strong className="text-[hsl(var(--foreground))]">8</strong> UTs
+            </span>
+            <span className="rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-2.5 py-1 text-[hsl(var(--muted-foreground))]">
+              <strong className="text-[hsl(var(--primary))]">{filteredStates.length}</strong> Results
+            </span>
+          </div>
+        </div>
+
+        {/* Search Bar */}
+        <div className="relative flex items-center">
+          <Search className="pointer-events-none absolute left-3.5 h-4 w-4 text-[hsl(var(--muted-foreground))]" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={t('states.searchPlaceholder')}
+            className="w-full rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] py-3 pl-10 pr-10 text-sm placeholder:text-[hsl(var(--muted-foreground))] focus:border-[hsl(var(--primary))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary)/.2)] shadow-sm transition-all"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 rounded-lg p-1 text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--muted))]"
+              title="Clear search"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+
+        {/* Filter Pills */}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-1.5">
+            {[
+              { key: 'All', label: t('states.filterAll') },
+              { key: 'North', label: t('states.filterNorth') },
+              { key: 'South', label: t('states.filterSouth') },
+              { key: 'East', label: t('states.filterEast') },
+              { key: 'West', label: t('states.filterWest') },
+              { key: 'Central', label: t('states.filterCentral') },
+              { key: 'North-East', label: t('states.filterNorthEast') },
+              { key: 'UT', label: t('states.filterUTs') },
+            ].map((reg) => (
+              <button
+                key={reg.key}
+                onClick={() => setSelectedRegion(reg.key as any)}
+                className={`rounded-full px-3 py-1 text-xs font-semibold transition-all ${
+                  selectedRegion === reg.key
+                    ? 'bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] shadow-sm'
+                    : 'border border-[hsl(var(--border))] bg-[hsl(var(--card)/.6)] text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--card))]'
+                }`}
+              >
+                {reg.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-1.5">
+            {[
+              { key: 'All', label: 'All Weather' },
+              { key: 'rain', label: '🌧️ Rain' },
+              { key: 'sunny', label: '☀️ Sunny' },
+              { key: 'cloudy', label: '⛅ Cloudy' },
+              { key: 'alert', label: '⚠️ Active Alerts' },
+            ].map((cond) => (
+              <button
+                key={cond.key}
+                onClick={() => setSelectedCondition(cond.key as any)}
+                className={`rounded-full px-2.5 py-1 text-[11px] font-medium transition-all ${
+                  selectedCondition === cond.key
+                    ? 'bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))] font-bold shadow-sm'
+                    : 'border border-[hsl(var(--border))] bg-[hsl(var(--card)/.4)] text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--card))]'
+                }`}
+              >
+                {cond.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* States Cards Grid */}
+        {filteredStates.length === 0 ? (
+          <div className="card-surface rounded-2xl p-10 text-center">
+            <Search className="mx-auto h-8 w-8 text-[hsl(var(--muted-foreground))]" />
+            <h3 className="mt-3 text-base font-semibold">No Indian state or city matching "{searchQuery}"</h3>
+            <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
+              Try searching for Maharashtra, Punjab, Assam, Tamil Nadu, Kerala, or clear the filters.
+            </p>
+            <button
+              onClick={() => {
+                setSearchQuery('');
+                setSelectedRegion('All');
+                setSelectedCondition('All');
+              }}
+              className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-[hsl(var(--primary))] px-3 py-1.5 text-xs font-semibold text-[hsl(var(--primary-foreground))]"
+            >
+              <RotateCcw className="h-3.5 w-3.5" /> Reset Search & Filters
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
+            {filteredStates.map((stateItem) => {
+              const isSelected = activeState?.id === stateItem.id;
+              return (
+                <div
+                  key={stateItem.id}
+                  className={`card-surface group rounded-xl p-4 transition-all duration-200 hover:-translate-y-1 hover:shadow-md border ${
+                    isSelected
+                      ? 'border-[hsl(var(--accent))] bg-[hsl(var(--accent)/.06)] ring-2 ring-[hsl(var(--accent)/.3)]'
+                      : 'border-[hsl(var(--border))] hover:border-[hsl(var(--primary)/.4)]'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] mono font-bold uppercase tracking-wider text-[hsl(var(--primary))]">
+                          {stateItem.region} · {stateItem.country}
+                        </span>
+                        <span className="rounded bg-[hsl(var(--secondary))] px-1.5 py-0.2 text-[9px] mono text-[hsl(var(--muted-foreground))]">
+                          {stateItem.type === 'State' ? 'State' : 'UT'}
+                        </span>
+                      </div>
+                      <h3 className="display mt-0.5 text-base font-bold truncate">
+                        {stateItem.name}
+                      </h3>
+                      <p className="text-[11px] text-[hsl(var(--muted-foreground))] truncate">
+                        {stateItem.capital} · {stateItem.hindiName}
+                      </p>
+                    </div>
+
+                    <div className="text-right shrink-0">
+                      <div className="display text-2xl font-bold tracking-tight">
+                        {stateItem.temperature}°C
+                      </div>
+                      <span className="text-[10px] text-[hsl(var(--muted-foreground))] block">
+                        Feels {stateItem.feelsLike}°
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 flex items-center justify-between rounded-lg bg-[hsl(var(--secondary)/.4)] p-2 text-xs">
+                    <div className="flex items-center gap-2">
+                      <WeatherGlyph condition={stateItem.condition} size="sm" />
+                      <span className="font-medium text-[hsl(var(--foreground))] truncate max-w-[130px]">
+                        {stateItem.condition}
+                      </span>
+                    </div>
+                    <span className="text-[11px] mono text-[hsl(var(--muted-foreground))]">
+                      H:{stateItem.high}° L:{stateItem.low}°
+                    </span>
+                  </div>
+
+                  <div className="mt-2.5 grid grid-cols-3 gap-1.5 text-[10px] text-[hsl(var(--muted-foreground))] border-t border-[hsl(var(--border)/.6)] pt-2.5">
+                    <div>
+                      <span className="block opacity-75">Rain</span>
+                      <strong className="text-[hsl(var(--foreground))]">{stateItem.rainChance}%</strong>
+                    </div>
+                    <div>
+                      <span className="block opacity-75">Humidity</span>
+                      <strong className="text-[hsl(var(--foreground))]">{stateItem.humidity}%</strong>
+                    </div>
+                    <div>
+                      <span className="block opacity-75">Wind</span>
+                      <strong className="text-[hsl(var(--foreground))]">{stateItem.windSpeed} km/h</strong>
+                    </div>
+                  </div>
+
+                  {stateItem.alert && (
+                    <div className="mt-2 rounded bg-[#fcedea] px-2 py-1 text-[10px] font-semibold text-[#b94836] flex items-center gap-1.5 truncate">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#b94836] shrink-0" />
+                      <span className="truncate">{stateItem.alert.title}</span>
+                    </div>
+                  )}
+
+                  <div className="mt-3 flex items-center gap-2 pt-1">
+                    <button
+                      onClick={() => handleSelectState(stateItem)}
+                      className={`flex-1 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all ${
+                        isSelected
+                          ? 'bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))]'
+                          : 'bg-[hsl(var(--secondary))] text-[hsl(var(--foreground))] hover:bg-[hsl(var(--primary))] hover:text-[hsl(var(--primary-foreground))]'
+                      }`}
+                    >
+                      {isSelected ? '✓ Active on Dashboard' : 'View on Dashboard'}
+                    </button>
+                    <button
+                      onClick={() => handleAskAboutState(stateItem.name)}
+                      title={`Ask WeatherGPT about ${stateItem.name}`}
+                      className="rounded-lg border border-[hsl(var(--border))] p-1.5 text-[hsl(var(--muted-foreground))] hover:border-[hsl(var(--primary))] hover:text-[hsl(var(--primary))] transition-colors"
+                    >
+                      <Sparkles className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       {/* Embedded WeatherGPT Conversational Intelligence on Main Dashboard */}
-      <section className="animate-rise delay-2">
+      <section id="assistant-section" className="animate-rise delay-2">
         <AssistantCard
           message={message}
           setMessage={setMessage}
