@@ -48,6 +48,7 @@ const navItems = [
   { href: '/map', label: 'Signal map', icon: MapIcon },
   { href: '/climate', label: 'Climate lens', icon: BarChart3 },
   { href: '/advisory', label: 'Field advisory', icon: Leaf },
+  { href: '/presentation', label: 'SIH Presentation', icon: Sparkles },
 ];
 
 export function WeatherShell({ children }: { children: React.ReactNode }) {
@@ -67,9 +68,23 @@ export function WeatherShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
         <div className="mx-7 mt-4 flex items-center gap-2 text-[10px] text-[hsl(var(--sidebar-foreground)/.62)]"><CircleDot className="h-3 w-3 text-[#f29b38]" /><span>WEATHER INTELLIGENCE · INDIA</span></div>
-        <div className="mx-7 mt-10 border-t border-[hsl(var(--sidebar-border))]" />
-        <div className="px-4 pt-5">
-          <p className="mono px-3 pb-3 text-[9px] uppercase tracking-[.18em] text-[hsl(var(--sidebar-foreground)/.46)]">Public services</p>
+        <div className="mx-7 mt-6 border-t border-[hsl(var(--sidebar-border))]" />
+
+        {/* SIH Panel Banner in Sidebar */}
+        <div className="mx-4 mt-4 rounded-xl border border-[hsl(var(--sidebar-primary)/.35)] bg-[hsl(var(--sidebar-primary)/.12)] p-3">
+          <div className="flex items-center justify-between text-[10px] font-bold text-[hsl(var(--sidebar-primary))]">
+            <span className="flex items-center gap-1.5"><Sparkles className="h-3 w-3" /> SIH 2026 EVALUATION</span>
+            <span className="rounded bg-[hsl(var(--sidebar-primary)/.2)] px-1.5 py-0.5 mono text-[9px]">ID: 26068</span>
+          </div>
+          <p className="mt-1 text-[11px] leading-tight text-[hsl(var(--sidebar-foreground)/.85)] font-medium">Ministry of Earth Sciences · IMD</p>
+          <Link href="/presentation" className="mt-2 flex items-center justify-between rounded-lg bg-[hsl(var(--sidebar-primary))] px-2.5 py-1.5 text-[11px] font-bold text-[hsl(var(--sidebar-primary-foreground))] shadow-sm hover:opacity-90 transition-opacity">
+            <span>Launch Slide Deck</span>
+            <ChevronRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+
+        <div className="px-4 pt-4">
+          <p className="mono px-3 pb-2 text-[9px] uppercase tracking-[.18em] text-[hsl(var(--sidebar-foreground)/.46)]">Public services</p>
           <nav className="space-y-1" aria-label="Primary navigation">
             {navItems.map((item) => <NavItem key={item.href} {...item} active={location === item.href} />)}
           </nav>
@@ -101,8 +116,13 @@ export function WeatherShell({ children }: { children: React.ReactNode }) {
             <div className="hidden items-center gap-3 sm:flex"><BrandMark /><div><div className="text-[11px] font-semibold tracking-[.02em]">WEATHER INTELLIGENCE · INDIA</div><span className="mono text-[9px] uppercase tracking-[.14em] text-[hsl(var(--muted-foreground))]">Clear guidance from public weather signals</span></div></div>
             <div className="sm:hidden"><BrandMark /></div>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="hidden items-center gap-2 rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card)/.6)] px-3 py-1.5 text-[11px] text-[hsl(var(--muted-foreground))] sm:flex"><span className="h-1.5 w-1.5 rounded-full bg-[#75ae81]" /> Data live</div>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link href="/presentation" className="flex items-center gap-1.5 rounded-full border border-[hsl(var(--accent)/.4)] bg-[hsl(var(--accent)/.12)] px-2.5 py-1 text-[11px] font-bold text-[hsl(var(--accent))] hover:bg-[hsl(var(--accent)/.22)] transition-colors" title="Open SIH 2026 Presentation Slide Deck">
+              <Sparkles className="h-3.5 w-3.5 text-[hsl(var(--accent))]" />
+              <span className="hidden xs:inline">SIH 2026 Pitch Deck</span>
+              <span className="xs:hidden">Pitch</span>
+            </Link>
+            <div className="hidden items-center gap-2 rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card)/.6)] px-3 py-1.5 text-[11px] text-[hsl(var(--muted-foreground))] md:flex"><span className="h-1.5 w-1.5 rounded-full bg-[#75ae81]" /> Data live</div>
             <button data-testid="button-refresh-dashboard" onClick={() => window.location.reload()} className="rounded-lg border border-[hsl(var(--border))] p-2 text-[hsl(var(--muted-foreground))] transition-transform hover:-rotate-45 hover:bg-[hsl(var(--card))]" title="Refresh data"><RefreshCw className="h-4 w-4" /></button>
             <div className="grid h-8 w-8 place-items-center rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] text-[10px] font-bold text-[hsl(var(--primary))]">IN</div>
           </div>
@@ -113,11 +133,11 @@ export function WeatherShell({ children }: { children: React.ReactNode }) {
       {mobileOpen && <div className="fixed inset-0 z-50 bg-[hsl(var(--foreground)/.32)] backdrop-blur-sm lg:hidden" onClick={() => setMobileOpen(false)}>
         <div className="h-full w-[285px] bg-[hsl(var(--sidebar))] p-6 text-[hsl(var(--sidebar-foreground))]" onClick={(event) => event.stopPropagation()}>
           <div className="flex items-center justify-between"><div className="flex items-center gap-3"><BrandMark compact /><span className="display font-bold">WeatherGPT</span></div><button data-testid="button-close-navigation" onClick={() => setMobileOpen(false)} className="rounded-lg p-2"><X className="h-5 w-5" /></button></div>
-          <nav className="mt-10 space-y-2">{navItems.map((item) => <NavItem key={item.href} {...item} active={location === item.href} onClick={() => setMobileOpen(false)} />)}</nav>
+          <nav className="mt-8 space-y-2">{navItems.map((item) => <NavItem key={item.href} {...item} active={location === item.href} onClick={() => setMobileOpen(false)} />)}</nav>
         </div>
       </div>}
-      <nav className="mobile-nav fixed bottom-0 left-0 right-0 z-40 border-t border-[hsl(var(--border))] bg-[hsl(var(--card)/.94)] px-2 py-2 backdrop-blur-xl" aria-label="Mobile navigation">
-        <div className="grid grid-cols-6 gap-1">{navItems.map((item) => <NavItem key={item.href} {...item} active={location === item.href} mobile />)}</div>
+      <nav className="mobile-nav fixed bottom-0 left-0 right-0 z-40 border-t border-[hsl(var(--border))] bg-[hsl(var(--card)/.94)] px-1 py-1.5 backdrop-blur-xl" aria-label="Mobile navigation">
+        <div className="grid grid-cols-7 gap-0.5">{navItems.map((item) => <NavItem key={item.href} {...item} active={location === item.href} mobile />)}</div>
       </nav>
     </div>
   );

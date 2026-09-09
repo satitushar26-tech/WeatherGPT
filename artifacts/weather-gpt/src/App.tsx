@@ -6,6 +6,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { WeatherShell } from '@/components/weather-ui';
 import { AdvisoryPage, AlertsPage, AskPage, ClimatePage, HomePage, MapPage } from '@/pages/weather-pages';
+import { PresentationPage } from '@/pages/presentation-page';
 import NotFound from '@/pages/not-found';
 
 const queryClient = new QueryClient({
@@ -15,7 +16,24 @@ const queryClient = new QueryClient({
 });
 
 function Router() {
-  return <WeatherShell><RoutedErrorBoundary><Switch><Route path="/" component={HomePage} /><Route path="/ask" component={AskPage} /><Route path="/alerts" component={AlertsPage} /><Route path="/map" component={MapPage} /><Route path="/climate" component={ClimatePage} /><Route path="/advisory" component={AdvisoryPage} /><Route component={NotFound} /></Switch></RoutedErrorBoundary></WeatherShell>;
+  return (
+    <WeatherShell>
+      <RoutedErrorBoundary>
+        <Switch>
+          <Route path="/" component={HomePage} />
+          <Route path="/ask" component={AskPage} />
+          <Route path="/alerts" component={AlertsPage} />
+          <Route path="/map" component={MapPage} />
+          <Route path="/climate" component={ClimatePage} />
+          <Route path="/advisory" component={AdvisoryPage} />
+          <Route path="/presentation" component={PresentationPage} />
+          <Route path="/pitch" component={PresentationPage} />
+          <Route path="/sih" component={PresentationPage} />
+          <Route component={NotFound} />
+        </Switch>
+      </RoutedErrorBoundary>
+    </WeatherShell>
+  );
 }
 
 function RoutedErrorBoundary({ children }: { children: ReactNode }) {
