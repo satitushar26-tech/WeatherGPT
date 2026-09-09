@@ -18,7 +18,7 @@ console.log('Generating PowerPoint (.pptx) file...');
 
 const pptx = new pptxgen();
 pptx.layout = 'LAYOUT_16x9';
-pptx.author = 'Team WeatherGPT';
+pptx.author = 'Harsh Bhanandari, Tushar Sati, Hairn Bisht, Himani Gargoti, Vinay Joshi, Himanshi Devli (Team WeatherGPT)';
 pptx.company = 'Smart India Hackathon 2026 (MoES / IMD)';
 pptx.title = 'WeatherGPT: Conversational AI for Weather Forecasting, Alerts, and Climate Information';
 pptx.subject = 'SIH 2026 Problem Statement ID 26068';
@@ -145,13 +145,27 @@ function addCommonHeaderFooter(slide, slideNum, totalSlides, tag, title, subtitl
     'An intelligent conversational platform that integrates meteorological datasets, numerical weather prediction (GFS/WRF) models, and CAP v1.2 disaster warning systems into accessible natural language & regional voice for 1.4 Billion citizens.',
     {
       x: 1.0,
-      y: 2.8,
+      y: 2.7,
       w: 11.0,
-      h: 1.0,
-      fontSize: 13,
+      h: 0.7,
+      fontSize: 12.5,
       fontFace: 'Arial',
       color: 'E2E8F0',
-      lineSpacingMultiple: 1.2,
+      lineSpacingMultiple: 1.15,
+    }
+  );
+
+  s.addText(
+    'Team Members: Harsh Bhanandari  ·  Tushar Sati  ·  Hairn Bisht  ·  Himani Gargoti  ·  Vinay Joshi  ·  Himanshi Devli',
+    {
+      x: 1.0,
+      y: 3.45,
+      w: 11.0,
+      h: 0.4,
+      fontSize: 11,
+      fontFace: 'Arial',
+      bold: true,
+      color: 'FF9933',
     }
   );
 
@@ -874,22 +888,45 @@ function addCommonHeaderFooter(slide, slideNum, totalSlides, tag, title, subtitl
     });
   });
 
+  // Team Members Showcase
+  s.addShape(pptx.ShapeType.roundRect, {
+    x: 0.6,
+    y: 5.25,
+    w: 12.1,
+    h: 0.75,
+    fill: { color: COLOR_CARD },
+    line: { color: COLOR_BORDER, width: 1 },
+    rectRadius: 0.08,
+  });
+
+  s.addText('PROJECT TEAM: Harsh Bhanandari  ·  Tushar Sati  ·  Hairn Bisht  ·  Himani Gargoti  ·  Vinay Joshi  ·  Himanshi Devli', {
+    x: 0.8,
+    y: 5.38,
+    w: 11.7,
+    h: 0.45,
+    fontSize: 11,
+    fontFace: 'Arial',
+    bold: true,
+    color: COLOR_NAVY,
+    align: 'center',
+  });
+
   // Closing banner
   s.addShape(pptx.ShapeType.roundRect, {
     x: 0.6,
-    y: 5.3,
+    y: 6.1,
     w: 12.1,
-    h: 1.4,
+    h: 0.85,
     fill: { color: COLOR_NAVY },
-    rectRadius: 0.12,
+    rectRadius: 0.1,
   });
 
   s.addText('Thank You, Respected Panel Members', {
-    x: 1.0,
-    y: 5.5,
+    x: 0.9,
+    y: 6.2,
     w: 8.0,
-    h: 0.4,
-    fontSize: 18,
+    h: 0.35,
+    fontSize: 16,
     fontFace: 'Arial',
     bold: true,
     color: 'FFFFFF',
@@ -898,11 +935,11 @@ function addCommonHeaderFooter(slide, slideNum, totalSlides, tag, title, subtitl
   s.addText(
     'WeatherGPT turns meteorological science into life-saving, everyday decisions for every Indian. Ready for Panel Q&A.',
     {
-      x: 1.0,
-      y: 6.0,
+      x: 0.9,
+      y: 6.55,
       w: 8.0,
-      h: 0.5,
-      fontSize: 11,
+      h: 0.32,
+      fontSize: 10,
       fontFace: 'Arial',
       color: 'E2E8F0',
     }
@@ -910,10 +947,10 @@ function addCommonHeaderFooter(slide, slideNum, totalSlides, tag, title, subtitl
 
   s.addText('Q & A SESSION', {
     x: 9.5,
-    y: 5.7,
+    y: 6.25,
     w: 3.0,
-    h: 0.5,
-    fontSize: 16,
+    h: 0.45,
+    fontSize: 15,
     fontFace: 'Arial',
     bold: true,
     color: 'FF9933',
@@ -965,6 +1002,10 @@ const slidesMeta = [
       {
         heading: 'Core Architecture Pillars',
         body: '• 8+ Indian Regional Languages with Voice STT/TTS recognition.\n• Numerical Weather Prediction (NWP) model sync (GFS 0.25° & WRF mesoscale).\n• Common Alerting Protocol (CAP v1.2) Red/Orange/Yellow disaster bulletins.\n• Progressive Web App (PWA) with offline disaster survival caching & web push.',
+      },
+      {
+        heading: 'Project Team Members',
+        body: 'Harsh Bhanandari  ·  Tushar Sati  ·  Hairn Bisht  ·  Himani Gargoti  ·  Vinay Joshi  ·  Himanshi Devli',
       },
     ],
     notes: 'Introduces team, problem statement, and core mandate.',
@@ -1130,6 +1171,10 @@ const slidesMeta = [
       {
         heading: '3-Phase Implementation Plan',
         body: '• Phase 1 (Working Today): Full PWA application, conversational RAG engine, Leaflet GIS map, Web Speech voice STT/TTS.\n• Phase 2 (Pre-Grand Finale): Live WIS 2.0 MQTT broker ingestion, Doppler Radar composite overlays, WhatsApp & Telegram bots.\n• Phase 3 (National Deployment): MoES/IMD national data integration, NDMIS integration, LoRaWAN mesh fallback for zero-network zones.',
+      },
+      {
+        heading: 'Project Team Members (WeatherGPT · SIH 2026)',
+        body: 'Harsh Bhanandari  ·  Tushar Sati  ·  Hairn Bisht  ·  Himani Gargoti  ·  Vinay Joshi  ·  Himanshi Devli',
       },
       {
         heading: 'Conclusion & Panel Q&A',

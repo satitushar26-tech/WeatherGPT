@@ -101,6 +101,30 @@ export function PresentationPage() {
               <p className="max-w-3xl text-lg sm:text-xl font-medium leading-relaxed text-[hsl(var(--foreground)/.85)]">
                 Next-generation conversational AI transforming raw meteorological feeds, NWP models (GFS/WRF), and disaster warning systems into actionable, multilingual, voice-first intelligence for 1.4 Billion citizens.
               </p>
+
+              <div className="pt-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="mono text-[10px] font-bold uppercase tracking-wider text-[hsl(var(--accent))] flex items-center gap-1">
+                    <Users className="h-3 w-3" /> Team:
+                  </span>
+                  {[
+                    'Harsh Bhanandari',
+                    'Tushar Sati',
+                    'Hairn Bisht',
+                    'Himani Gargoti',
+                    'Vinay Joshi',
+                    'Himanshi Devli',
+                  ].map((member) => (
+                    <span
+                      key={member}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-2.5 py-1 text-xs font-semibold text-[hsl(var(--foreground))] shadow-xs"
+                    >
+                      <span className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--accent))]" />
+                      {member}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -1080,6 +1104,37 @@ export function PresentationPage() {
                   <span className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--primary))]" /> District-level gram panchayat kiosks
                 </li>
               </ul>
+            </div>
+          </div>
+
+          {/* Team Members Showcase */}
+          <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 shadow-sm">
+            <div className="flex items-center justify-between mb-2.5 pb-2 border-b border-[hsl(var(--border))]">
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-[hsl(var(--accent))]" />
+                <span className="text-xs font-bold text-[hsl(var(--foreground))]">Project Team Members</span>
+              </div>
+              <span className="mono text-[10px] text-[hsl(var(--muted-foreground))]">Team WeatherGPT · SIH 2026</span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+              {[
+                'Harsh Bhanandari',
+                'Tushar Sati',
+                'Hairn Bisht',
+                'Himani Gargoti',
+                'Vinay Joshi',
+                'Himanshi Devli',
+              ].map((member) => (
+                <div
+                  key={member}
+                  className="flex items-center gap-2 rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--secondary)/.45)] px-2.5 py-1.5"
+                >
+                  <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[hsl(var(--primary))] text-[10px] font-bold text-[hsl(var(--primary-foreground))]">
+                    {member.split(' ')[0][0]}
+                  </span>
+                  <span className="text-xs font-semibold text-[hsl(var(--foreground))] truncate">{member}</span>
+                </div>
+              ))}
             </div>
           </div>
 
