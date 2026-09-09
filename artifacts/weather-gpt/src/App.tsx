@@ -7,6 +7,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { WeatherShell } from '@/components/weather-ui';
 import { AdvisoryPage, AlertsPage, AskPage, ClimatePage, HomePage, MapPage } from '@/pages/weather-pages';
 import { PresentationPage } from '@/pages/presentation-page';
+import { LanguageProvider } from '@/lib/i18n';
 import NotFound from '@/pages/not-found';
 
 const queryClient = new QueryClient({
@@ -42,7 +43,18 @@ function RoutedErrorBoundary({ children }: { children: ReactNode }) {
 }
 
 function App() {
-  return <QueryClientProvider client={queryClient}><TooltipProvider><WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}><Router /></WouterRouter><Toaster /></TooltipProvider></QueryClientProvider>;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <LanguageProvider>
+          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
+            <Router />
+          </WouterRouter>
+          <Toaster />
+        </LanguageProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
 }
 
 export default App;
