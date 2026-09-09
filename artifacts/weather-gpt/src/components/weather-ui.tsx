@@ -44,19 +44,54 @@ import {
 } from 'lucide-react';
 import { useLanguage, type LanguageCode } from '@/lib/i18n';
 
-export function LanguageSelector({ compact = false }: { compact?: boolean }) {
-  const { language, setLanguage, supportedLanguages } = useLanguage();
+export function LanguageSelector({ compact = false, fullWidth = false }: { compact?: boolean; fullWidth?: boolean }) {
+  const { language, setLanguage, supportedLanguages, langInfo } = useLanguage();
+
+  if (fullWidth) {
+    return (
+      <div className="relative flex w-full items-center">
+        <div className="flex w-full items-center justify-between rounded-lg border border-[hsl(var(--sidebar-border))] bg-[hsl(var(--sidebar-accent))] px-3 py-2 text-xs font-semibold text-[hsl(var(--sidebar-foreground))]">
+          <div className="flex items-center gap-2 min-w-0">
+            <Globe className="h-4 w-4 shrink-0 text-[hsl(var(--sidebar-primary))]" />
+            <span className="truncate">{langInfo.nativeName} ({langInfo.name})</span>
+          </div>
+          <select
+            aria-label="Select Interface Language"
+            value={language}
+            onChange={(e) => setLanguage(e.target.value as LanguageCode)}
+            className="absolute inset-0 w-full h-full cursor-pointer opacity-0"
+          >
+            {supportedLanguages.map((lang) => (
+              <option key={lang.code} value={lang.code} className="bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))]">
+                {lang.nativeName} ({lang.name})
+              </option>
+            ))}
+          </select>
+          <span className="pointer-events-none text-[9px] text-[hsl(var(--sidebar-foreground)/.6)]">▼</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative inline-flex items-center">
-      <div className={`flex items-center gap-1.5 rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card)/.9)] px-2.5 py-1 text-xs font-semibold text-[hsl(var(--foreground))] transition-all hover:bg-[hsl(var(--card))] hover:border-[hsl(var(--primary)/.4)] focus-within:ring-2 focus-within:ring-[hsl(var(--primary)/.3)] ${compact ? 'text-[11px] px-2 py-0.5' : ''}`}>
+      <div
+        className={`flex items-center gap-1.5 rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card)/.9)] px-2.5 py-1 text-xs font-semibold text-[hsl(var(--foreground))] transition-all hover:bg-[hsl(var(--card))] hover:border-[hsl(var(--primary)/.4)] focus-within:ring-2 focus-within:ring-[hsl(var(--primary)/.3)] ${
+          compact ? 'text-[11px] px-2 py-0.5' : ''
+        }`}
+      >
         <Globe className="h-3.5 w-3.5 shrink-0 text-[hsl(var(--primary))]" />
+        {/* On mobile: compact consolidated pill with 2-letter language code */}
+        <span className="sm:hidden text-[11px] font-bold text-[hsl(var(--primary))] tracking-wide">
+          {langInfo.code.toUpperCase()}
+        </span>
+        {/* On desktop: full language name dropdown */}
         <select
           aria-label="Select Interface Language"
           data-testid="select-global-language"
           value={language}
           onChange={(e) => setLanguage(e.target.value as LanguageCode)}
-          className="cursor-pointer appearance-none bg-transparent pr-4 text-xs font-medium text-[hsl(var(--foreground))] outline-none"
+          className="hidden sm:inline cursor-pointer appearance-none bg-transparent pr-4 text-xs font-medium text-[hsl(var(--foreground))] outline-none"
         >
           {supportedLanguages.map((lang) => (
             <option key={lang.code} value={lang.code} className="bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))]">
@@ -64,7 +99,20 @@ export function LanguageSelector({ compact = false }: { compact?: boolean }) {
             </option>
           ))}
         </select>
-        <span className="pointer-events-none absolute right-2 text-[8px] text-[hsl(var(--muted-foreground))]">▼</span>
+        {/* Mobile invisible overlay select so tap anywhere on the compact pill opens the native picker */}
+        <select
+          aria-label="Select Interface Language (Mobile)"
+          value={language}
+          onChange={(e) => setLanguage(e.target.value as LanguageCode)}
+          className="absolute inset-0 cursor-pointer opacity-0 sm:hidden w-full h-full"
+        >
+          {supportedLanguages.map((lang) => (
+            <option key={lang.code} value={lang.code} className="bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))]">
+              {lang.nativeName} ({lang.name})
+            </option>
+          ))}
+        </select>
+        <span className="pointer-events-none text-[8px] text-[hsl(var(--muted-foreground))]">▼</span>
       </div>
     </div>
   );
@@ -77,7 +125,6 @@ const navItemDefs = [
   { href: '/map', translationKey: 'nav.map', defaultLabel: 'Signal map', icon: MapIcon },
   { href: '/climate', translationKey: 'nav.climate', defaultLabel: 'Climate lens', icon: BarChart3 },
   { href: '/advisory', translationKey: 'nav.advisory', defaultLabel: 'Field advisory', icon: Leaf },
-  { href: '/presentation', translationKey: 'nav.presentation', defaultLabel: 'SIH Presentation', icon: Sparkles },
 ];
 
 export function WeatherShell({ children }: { children: React.ReactNode }) {
@@ -174,14 +221,8 @@ export function WeatherShell({ children }: { children: React.ReactNode }) {
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
             <LanguageSelector />
-            <Link href="/presentation" className="flex items-center gap-1.5 rounded-full border border-[hsl(var(--accent)/.4)] bg-[hsl(var(--accent)/.12)] px-2.5 py-1 text-[11px] font-bold text-[hsl(var(--accent))] hover:bg-[hsl(var(--accent)/.22)] transition-colors" title="Open SIH 2026 Presentation Slide Deck">
-              <Sparkles className="h-3.5 w-3.5 text-[hsl(var(--accent))]" />
-              <span className="hidden xs:inline">{t('header.pitch')}</span>
-              <span className="xs:hidden">Pitch</span>
-            </Link>
             <div className="hidden items-center gap-2 rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card)/.6)] px-3 py-1.5 text-[11px] text-[hsl(var(--muted-foreground))] md:flex"><span className="h-1.5 w-1.5 rounded-full bg-[#75ae81]" /> {t('header.live')}</div>
             <button data-testid="button-refresh-dashboard" onClick={() => window.location.reload()} className="rounded-lg border border-[hsl(var(--border))] p-2 text-[hsl(var(--muted-foreground))] transition-transform hover:-rotate-45 hover:bg-[hsl(var(--card))]" title={t('header.refresh')}><RefreshCw className="h-4 w-4" /></button>
-            <div className="grid h-8 w-8 place-items-center rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] text-[10px] font-bold text-[hsl(var(--primary))]">{langInfo.code.toUpperCase()}</div>
           </div>
         </header>
         {children}
@@ -192,7 +233,7 @@ export function WeatherShell({ children }: { children: React.ReactNode }) {
           <div className="flex items-center justify-between"><div className="flex items-center gap-3"><BrandMark compact /><span className="display font-bold">WeatherGPT</span></div><button data-testid="button-close-navigation" onClick={() => setMobileOpen(false)} className="rounded-lg p-2"><X className="h-5 w-5" /></button></div>
           <div className="mt-4 pb-4 border-b border-[hsl(var(--sidebar-border))]">
             <p className="mono pb-2 text-[9px] uppercase tracking-[.18em] text-[hsl(var(--sidebar-foreground)/.46)]">Language / भाषा</p>
-            <LanguageSelector />
+            <LanguageSelector fullWidth />
           </div>
           <nav className="mt-4 space-y-2">
             {navItems.map((item) => (
@@ -208,9 +249,9 @@ export function WeatherShell({ children }: { children: React.ReactNode }) {
           </nav>
         </div>
       </div>}
-      <nav className="mobile-nav fixed bottom-0 left-0 right-0 z-40 border-t border-[hsl(var(--border))] bg-[hsl(var(--card)/.94)] px-1 py-1.5 backdrop-blur-xl" aria-label="Mobile navigation">
-        <div className="grid grid-cols-7 gap-0.5">
-          {navItems.map((item) => (
+      <nav className="mobile-nav fixed bottom-0 left-0 right-0 z-40 border-t border-[hsl(var(--border))] bg-[hsl(var(--card)/.94)] px-2 py-1.5 backdrop-blur-xl" aria-label="Mobile navigation">
+        <div className="grid grid-cols-4 gap-1">
+          {navItems.slice(0, 4).map((item) => (
             <NavItem
               key={item.href}
               href={item.href}
@@ -227,7 +268,38 @@ export function WeatherShell({ children }: { children: React.ReactNode }) {
 }
 
 function NavItem({ href, label, icon: Icon, active, onClick, mobile }: { href: string; label: string; icon: typeof Compass; active: boolean; onClick?: () => void; mobile?: boolean }) {
-  return <Link href={href} onClick={onClick} data-testid={`link-${label.toLowerCase().replaceAll(' ', '-')}`} className={`${mobile ? 'flex-col gap-1 py-1.5 text-[10px]' : 'gap-3 px-3 py-3 text-[13px]'} ${active ? 'bg-[hsl(var(--sidebar-primary)/.14)] text-[hsl(var(--sidebar-primary))]' : mobile ? 'text-[hsl(var(--muted-foreground))]' : 'text-[hsl(var(--sidebar-foreground)/.68)] hover:bg-[hsl(var(--sidebar-accent))] hover:text-[hsl(var(--sidebar-foreground))]'} flex items-center rounded-lg font-medium transition-colors`}><Icon className={`${mobile ? 'h-4 w-4' : 'h-[17px] w-[17px]'}`} /><span>{mobile ? label.split(' ')[0] : label}</span>{active && !mobile && <ChevronRight className="ml-auto h-3.5 w-3.5 opacity-60" />}</Link>;
+  const getMobileText = (h: string, l: string) => {
+    if (h === '/') {
+      return l.replace('Main ', '').replace('मुख्य ', '').trim();
+    }
+    if (h === '/map') {
+      return l.toLowerCase().includes('map') ? 'Map' : l.split(' ')[0];
+    }
+    return l.split(' ')[0];
+  };
+
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      data-testid={`link-${label.toLowerCase().replaceAll(' ', '-')}`}
+      className={`${
+        mobile
+          ? 'flex-col gap-1 py-1.5 px-1 text-[10px] items-center justify-center text-center'
+          : 'gap-3 px-3 py-3 text-[13px]'
+      } ${
+        active
+          ? 'bg-[hsl(var(--sidebar-primary)/.14)] text-[hsl(var(--sidebar-primary))] font-bold'
+          : mobile
+            ? 'text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]'
+            : 'text-[hsl(var(--sidebar-foreground)/.68)] hover:bg-[hsl(var(--sidebar-accent))] hover:text-[hsl(var(--sidebar-foreground))]'
+      } flex items-center rounded-lg font-medium transition-colors`}
+    >
+      <Icon className={`${mobile ? 'h-4 w-4' : 'h-[17px] w-[17px]'}`} />
+      <span className="truncate">{mobile ? getMobileText(href, label) : label}</span>
+      {active && !mobile && <ChevronRight className="ml-auto h-3.5 w-3.5 opacity-60" />}
+    </Link>
+  );
 }
 
 export function BrandMark({ compact = false }: { compact?: boolean }) {
