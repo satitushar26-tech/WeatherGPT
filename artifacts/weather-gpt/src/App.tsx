@@ -22,6 +22,10 @@ function Router() {
       <RoutedErrorBoundary>
         <Switch>
           <Route path="/" component={HomePage} />
+          <Route path="/dashboard" component={HomePage} />
+          <Route path="/main-dashboard" component={HomePage} />
+          <Route path="/weather" component={HomePage} />
+          <Route path="/desk" component={HomePage} />
           <Route path="/ask" component={AskPage} />
           <Route path="/alerts" component={AlertsPage} />
           <Route path="/map" component={MapPage} />

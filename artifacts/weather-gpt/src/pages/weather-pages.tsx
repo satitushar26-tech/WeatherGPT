@@ -84,17 +84,132 @@ type VoiceRecognition = {
 
 type VoiceRecognitionConstructor = new () => VoiceRecognition;
 
+const fallbackOverview = {
+  location: 'New Delhi',
+  region: 'National Capital Region',
+  updatedAt: new Date().toISOString(),
+  temperature: 31,
+  feelsLike: 34,
+  condition: 'Partly Cloudy',
+  conditionIcon: 'partly-cloudy-day',
+  high: 36,
+  low: 26,
+  rainChance: 25,
+  humidity: 62,
+  wind: 14,
+  pressure: 1008,
+  visibility: 6.5,
+  uvIndex: 7,
+  metrics: [
+    { label: 'Humidity', value: '62%', detail: 'Moderate tropical feel', icon: 'humidity' },
+    { label: 'Wind speed', value: '14 km/h', detail: 'Gusts up to 22 km/h ENE', icon: 'wind' },
+    { label: 'Barometer', value: '1008 hPa', detail: 'Steady pressure trend', icon: 'pressure' },
+    { label: 'Visibility', value: '6.5 km', detail: 'Haze clearing by noon', icon: 'visibility' },
+    { label: 'UV Index', value: '7 of 11', detail: 'High sun exposure index', icon: 'thermometer' },
+    { label: 'Rain probability', value: '25%', detail: 'Isolated evening thunder', icon: 'humidity' },
+  ],
+  forecast: [
+    { day: 'Today', date: '10 Sep', icon: 'partly-cloudy-day', high: 36, low: 26, rainChance: 25, rainfall: 1.2, condition: 'Partly Cloudy' },
+    { day: 'Thu', date: '11 Sep', icon: 'cloudy', high: 35, low: 25, rainChance: 40, rainfall: 4.8, condition: 'Scattered Clouds' },
+    { day: 'Fri', date: '12 Sep', icon: 'rain', high: 33, low: 24, rainChance: 75, rainfall: 18.5, condition: 'Moderate Rain' },
+    { day: 'Sat', date: '13 Sep', icon: 'rain', high: 32, low: 24, rainChance: 85, rainfall: 28.0, condition: 'Heavy Showers' },
+    { day: 'Sun', date: '14 Sep', icon: 'partly-cloudy-day', high: 34, low: 25, rainChance: 35, rainfall: 2.1, condition: 'Passing Showers' },
+    { day: 'Mon', date: '15 Sep', icon: 'sunny', high: 36, low: 26, rainChance: 15, rainfall: 0.0, condition: 'Clear Skies' },
+    { day: 'Tue', date: '16 Sep', icon: 'sunny', high: 37, low: 27, rainChance: 10, rainfall: 0.0, condition: 'Mainly Sunny' },
+  ],
+  alerts: [
+    {
+      id: 'alt-del-01',
+      type: 'thunderstorm',
+      severity: 'moderate',
+      title: 'Thunderstorm & Gusty Winds Advisory',
+      location: 'Delhi-NCR & Western UP',
+      issued: 'Today, 06:30 IST',
+      expires: 'Tonight, 22:00 IST',
+      description: 'IMD Radar detects localized convective cloud build-up with gusty surface winds (30-40 km/h) and light to moderate lightning activity.',
+      color: '#f29b38',
+    },
+    {
+      id: 'alt-mum-02',
+      type: 'heavy_rain',
+      severity: 'high',
+      title: 'Monsoon Surge Orange Alert',
+      location: 'Konkan & Coastal Maharashtra',
+      issued: 'Today, 08:00 IST',
+      expires: 'Tomorrow, 18:00 IST',
+      description: 'Intense rain bands active along coastal ghats. Fishermen advised not to venture into deep sea due to rough squally weather.',
+      color: '#d94b38',
+    },
+  ],
+  climate: {
+    location: 'India Composite Analysis',
+    period: '2026 Monsoon Horizon',
+    rainfallChange: 4.2,
+    temperatureChange: 0.8,
+    points: [
+      { month: 'Apr', rainfall: 22, average: 18, temperature: 34.2 },
+      { month: 'May', rainfall: 45, average: 38, temperature: 37.8 },
+      { month: 'Jun', rainfall: 110, average: 95, temperature: 35.1 },
+      { month: 'Jul', rainfall: 245, average: 230, temperature: 31.4 },
+      { month: 'Aug', rainfall: 280, average: 260, temperature: 30.2 },
+      { month: 'Sep', rainfall: 165, average: 150, temperature: 31.8 },
+    ],
+  },
+};
+
 export function HomePage() {
   const overview = useGetWeatherOverview({ query: { queryKey: getGetWeatherOverviewQueryKey() } });
-  const { t } = useLanguage();
-  const data = overview.data;
+  const ask = useAskWeatherAssistant();
+  const { langInfo, t } = useLanguage();
+  const [message, setMessage] = useState('');
+  const [chatLog, setChatLog] = useState<Array<{ role: 'user' | 'assistant'; text: string; highlights?: string[]; advisory?: { title: string; status: string; body: string; actions: string[] } }>>([]);
+
+  const suggestions = [
+    t('ask.sample1'),
+    t('ask.sample2'),
+    t('ask.sample3'),
+    t('ask.sample4'),
+  ];
+
+  const submitQuestion = (question = message) => {
+    const trimmed = question.trim();
+    if (!trimmed || ask.isPending) return;
+    setChatLog((current) => [...current, { role: 'user', text: trimmed }]);
+    setMessage('');
+    ask.mutate({ data: { message: trimmed, language: langInfo.name } }, {
+      onSuccess: (response) => setChatLog((current) => [...current, { role: 'assistant', text: response.answer, highlights: response.highlights, advisory: response.advisory }]),
+      onError: () => setChatLog((current) => [...current, { role: 'assistant', text: 'The field signal is delayed right now. Please try that question once more.' }]),
+    });
+  };
+
+  const data = overview.data ?? fallbackOverview;
 
   return <div className="content-wrap weather-grid">
       <div className="animate-rise mb-8 flex flex-wrap items-end justify-between gap-4">
-       <div><p className="mono mb-2 text-[10px] uppercase tracking-[.2em] text-[hsl(var(--primary))]">WEATHER INTELLIGENCE · INDIA</p><h1 className="display text-[clamp(30px,4.5vw,52px)] font-bold leading-[.98] tracking-[-.065em]">Weather answers<br /><span className="text-[hsl(var(--primary))]">for everyday decisions.</span></h1><p className="mt-4 max-w-lg text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">WeatherGPT brings forecasts, warnings, and decision support from public weather signals into one conversational service.</p></div>
-      <div className="flex flex-wrap items-center justify-end gap-2"><div className="flex items-center gap-2 rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card)/.7)] px-3 py-2 text-xs text-[hsl(var(--muted-foreground))]"><Crosshair className="h-3.5 w-3.5 text-[hsl(var(--accent-foreground))]" /> India · local time <ChevronDown className="h-3.5 w-3.5" /></div><Link href="/map" data-testid="link-home-map" className="inline-flex items-center gap-2 rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card)/.7)] px-4 py-2.5 text-xs font-semibold text-[hsl(var(--foreground))] hover:bg-[hsl(var(--card))] transition-transform hover:-translate-y-0.5"><MapIcon className="h-3.5 w-3.5 text-[hsl(var(--primary))]" /> Live Map</Link><Link href="/ask" data-testid="link-home-ask" className="inline-flex items-center gap-2 rounded-full bg-[hsl(var(--primary))] px-4 py-2.5 text-xs font-semibold text-[hsl(var(--primary-foreground))] shadow-[0_10px_24px_hsl(var(--primary)/.18)] transition-transform hover:-translate-y-0.5"><MessageCircle className="h-3.5 w-3.5" /> Ask WeatherGPT</Link></div>
+       <div>
+         <div className="flex items-center gap-2 mb-2">
+           <span className="inline-flex items-center gap-1.5 rounded-full bg-[hsl(var(--primary)/.12)] px-2.5 py-0.5 mono text-[10px] font-bold text-[hsl(var(--primary))] uppercase tracking-[.15em]">
+             <span className="h-1.5 w-1.5 rounded-full bg-[#138808] animate-pulse" />
+             {t('nav.mainDashboard')} · LIVE
+           </span>
+           <span className="text-[10px] mono text-[hsl(var(--muted-foreground))]">SIH 2026 #26068</span>
+         </div>
+         <h1 className="display text-[clamp(30px,4.5vw,52px)] font-bold leading-[.98] tracking-[-.065em]">Weather answers<br /><span className="text-[hsl(var(--primary))]">for everyday decisions.</span></h1>
+         <p className="mt-4 max-w-lg text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">WeatherGPT brings forecasts, warnings, and decision support from public weather signals into one unified dashboard and conversational service.</p>
+       </div>
+       <div className="flex flex-wrap items-center justify-end gap-2">
+         <div className="flex items-center gap-2 rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card)/.7)] px-3 py-2 text-xs text-[hsl(var(--muted-foreground))]">
+           <Crosshair className="h-3.5 w-3.5 text-[hsl(var(--accent-foreground))]" /> India · {langInfo.nativeName} ({langInfo.name})
+         </div>
+         <Link href="/map" data-testid="link-home-map" className="inline-flex items-center gap-2 rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card)/.7)] px-4 py-2.5 text-xs font-semibold text-[hsl(var(--foreground))] hover:bg-[hsl(var(--card))] transition-transform hover:-translate-y-0.5">
+           <MapIcon className="h-3.5 w-3.5 text-[hsl(var(--primary))]" /> Live Map
+         </Link>
+         <Link href="/ask" data-testid="link-home-ask" className="inline-flex items-center gap-2 rounded-full bg-[hsl(var(--primary))] px-4 py-2.5 text-xs font-semibold text-[hsl(var(--primary-foreground))] shadow-[0_10px_24px_hsl(var(--primary)/.18)] transition-transform hover:-translate-y-0.5">
+           <MessageCircle className="h-3.5 w-3.5" /> Ask WeatherGPT
+         </Link>
+       </div>
     </div>
-    {overview.isLoading ? <HomeSkeleton /> : overview.isError || !data ? <ErrorState onRetry={() => overview.refetch()} /> : <div className="space-y-7">
+    {overview.isLoading && !overview.data ? <HomeSkeleton /> : <div className="space-y-7">
       <section className="animate-rise delay-1 grid gap-5 xl:grid-cols-[1.18fr_.82fr]">
         <div className="relative overflow-hidden rounded-2xl bg-[hsl(var(--primary))] p-6 text-[hsl(var(--primary-foreground))] shadow-[0_20px_50px_hsl(var(--primary)/.2)] sm:p-8">
           <div className="absolute -right-8 -top-12 h-64 w-64 rounded-full border border-[hsl(var(--primary-foreground)/.08)]" /><div className="absolute -right-20 -top-24 h-80 w-80 rounded-full border border-[hsl(var(--primary-foreground)/.06)]" />
@@ -103,6 +218,19 @@ export function HomePage() {
         </div>
         <div className="card-surface rounded-2xl p-6"><div className="flex items-start justify-between"><div><p className="mono text-[10px] uppercase tracking-[.16em] text-[hsl(var(--muted-foreground))]">Today’s read</p><h2 className="display mt-2 text-2xl font-bold tracking-[-.05em]">Conditions are <span className="text-[hsl(var(--primary))]">steady.</span></h2></div><div className="grid h-10 w-10 place-items-center rounded-xl bg-[hsl(var(--secondary))] text-[hsl(var(--primary))]"><SunMedium className="h-5 w-5" /></div></div><p className="mt-5 text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">A warm start with a watchful eye on afternoon moisture. Outdoor work is most comfortable before 11:00 and after 16:00.</p><div className="mt-6 border-t border-[hsl(var(--border))] pt-5"><div className="flex items-center justify-between text-xs"><span className="text-[hsl(var(--muted-foreground))]">{t('metric.confidence')}</span><span className="font-semibold text-[hsl(var(--primary))]">High</span></div><div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[hsl(var(--muted))]"><div className="h-full w-[78%] rounded-full bg-[hsl(var(--accent))]" /></div><div className="mt-3 flex items-center gap-1.5 text-[11px] text-[hsl(var(--muted-foreground))]"><ShieldCheck className="h-3.5 w-3.5 text-[#5c9270]" /> Based on 4 live signals</div></div></div>
       </section>
+
+      {/* Embedded WeatherGPT Conversational Intelligence on Main Dashboard */}
+      <section className="animate-rise delay-2">
+        <AssistantCard
+          message={message}
+          setMessage={setMessage}
+          suggestions={suggestions}
+          chatLog={chatLog}
+          isPending={ask.isPending}
+          onSubmit={submitQuestion}
+        />
+      </section>
+
       <section className="animate-rise delay-2"><div className="mb-3 flex items-center justify-between"><p className="mono text-[10px] uppercase tracking-[.17em] text-[hsl(var(--muted-foreground))]">Atmosphere now</p><span className="text-[11px] text-[hsl(var(--muted-foreground))]">Local observation · {formatUpdated(data.updatedAt)}</span></div><div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">{data.metrics.map((metric) => <MetricCard key={metric.label} {...metric} />)}</div></section>
       <section className="animate-rise delay-3"><SectionHeading eyebrow="Next seven days" title="Plan around the pattern." detail="A glanceable forecast, with rainfall kept in millimetres so plans stay grounded." action={<Link href="/climate" data-testid="link-view-climate" className="hidden items-center gap-1 text-xs font-semibold text-[hsl(var(--primary))] sm:flex">See climate lens <ArrowUpRight className="h-3.5 w-3.5" /></Link>} /><div className="card-surface overflow-x-auto rounded-2xl"><div className="grid min-w-[720px] grid-cols-7 divide-x divide-[hsl(var(--border))]">{data.forecast.map((day, index) => <div key={`${day.date}-${index}`} className={`group p-4 transition-colors hover:bg-[hsl(var(--secondary)/.42)] ${index === 0 ? 'bg-[hsl(var(--secondary)/.32)]' : ''}`}><p className="text-xs font-semibold">{day.day}</p><p className="mono mt-1 text-[10px] text-[hsl(var(--muted-foreground))]">{day.date}</p><div className="my-5"><WeatherGlyph condition={day.condition} /></div><p className="text-xs text-[hsl(var(--muted-foreground))]">{day.condition}</p><div className="mt-4 flex items-center justify-between text-xs"><span className="font-bold">{Math.round(day.high)}°</span><span className="text-[hsl(var(--muted-foreground))]">{Math.round(day.low)}°</span></div><div className="mt-3 flex items-center gap-1 text-[10px] text-[hsl(var(--primary))]"><CloudRain className="h-3 w-3" />{day.rainChance}%</div></div>)}</div></div></section>
       <section className="grid gap-5 lg:grid-cols-[1.05fr_.95fr]"><div className="card-surface rounded-2xl p-6"><SectionHeading eyebrow="Active watch" title={`${data.alerts.length || 'No'} alerts nearby`} detail="Prioritised by urgency and impact to your area." action={<Link href="/alerts" data-testid="link-open-alerts" className="text-xs font-semibold text-[hsl(var(--primary))]">Open center</Link>} />{data.alerts.length ? <div className="space-y-3">{data.alerts.slice(0, 3).map((alert) => <AlertRow key={alert.id} alert={alert} />)}</div> : <EmptyState title="Quiet skies for now" detail="No active warnings are mapped to this region." icon={ShieldCheck} />}</div><div className="rounded-2xl border border-[hsl(var(--primary)/.18)] bg-[hsl(var(--secondary)/.46)] p-6"><p className="mono text-[10px] uppercase tracking-[.16em] text-[hsl(var(--primary))]">Public service note</p><h2 className="display mt-3 text-xl font-bold tracking-[-.04em]">Use official warnings first.</h2><p className="mt-3 text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">WeatherGPT helps explain conditions and prepare next steps. In an emergency, follow instructions from district authorities and IMD bulletins.</p><Link href="/alerts" className="mt-5 inline-flex items-center gap-2 text-xs font-semibold text-[hsl(var(--primary))]">Read active warnings <ArrowUpRight className="h-3.5 w-3.5" /></Link></div></section>

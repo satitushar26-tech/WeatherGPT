@@ -36,6 +36,7 @@ export const SUPPORTED_LANGUAGES: LanguageInfo[] = [
 export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
   en: {
     // Nav
+    'nav.mainDashboard': 'Main Dashboard',
     'nav.weatherDesk': 'Weather desk',
     'nav.ask': 'Ask WeatherGPT',
     'nav.alerts': 'Alert center',
@@ -90,6 +91,7 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'metric.confidence': 'Operational confidence',
   },
   hi: {
+    'nav.mainDashboard': 'मुख्य डैशबोर्ड',
     'nav.weatherDesk': 'मौसम डेस्क',
     'nav.ask': 'WeatherGPT से पूछें',
     'nav.alerts': 'चेतावनी केंद्र',
@@ -141,6 +143,7 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'metric.confidence': 'सटीकता विश्वास',
   },
   mr: {
+    'nav.mainDashboard': 'मुख्य डॅशबोर्ड',
     'nav.weatherDesk': 'हवामान डेस्क',
     'nav.ask': 'WeatherGPT ला विचारा',
     'nav.alerts': 'सतर्कता केंद्र',
@@ -192,6 +195,7 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'metric.confidence': 'ऑपरेशनल आत्मविश्वास',
   },
   bn: {
+    'nav.mainDashboard': 'মূল ড্যাশবোর্ড',
     'nav.weatherDesk': 'আবহাওয়া ডেস্ক',
     'nav.ask': 'WeatherGPT কে জিজ্ঞাসা করুন',
     'nav.alerts': 'সতর্কতা কেন্দ্র',
@@ -243,6 +247,7 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'metric.confidence': 'নির্ভুলতার মাত্রা',
   },
   ta: {
+    'nav.mainDashboard': 'முதன்மை டாஷ்போர்டு',
     'nav.weatherDesk': 'வானிலை மேசை',
     'nav.ask': 'WeatherGPT-யிடம் கேளுங்கள்',
     'nav.alerts': 'எச்சரிக்கை மையம்',
@@ -294,6 +299,7 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'metric.confidence': 'செயல்பாட்டு நம்பகத்தன்மை',
   },
   te: {
+    'nav.mainDashboard': 'ప్రధాన డ్యాష్‌బోర్డ్',
     'nav.weatherDesk': 'వాతావరణ డెస్క్',
     'nav.ask': 'WeatherGPT ని అడగండి',
     'nav.alerts': 'హెచ్చరిక కేంద్రం',
@@ -345,6 +351,7 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'metric.confidence': 'విశ్వసనీయత',
   },
   gu: {
+    'nav.mainDashboard': 'મુખ્ય ડેશબોર્ડ',
     'nav.weatherDesk': 'હવામાન ડેસ્ક',
     'nav.ask': 'WeatherGPT ને પૂછો',
     'nav.alerts': 'ચેતવણી કેન્દ્ર',
@@ -396,6 +403,7 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'metric.confidence': 'ચોકસાઈનો વિશ્વાસ',
   },
   kn: {
+    'nav.mainDashboard': 'ಮುಖ್ಯ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್',
     'nav.weatherDesk': 'ಹವಾಮಾನ ಡೆಸ್ಕ್',
     'nav.ask': 'WeatherGPT ಅನ್ನು ಕೇಳಿ',
     'nav.alerts': 'ಎಚ್ಚರಿಕೆ ಕೇಂದ್ರ',
@@ -447,6 +455,7 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'metric.confidence': 'ವಿಶ್ವಾಸಾರ್ಹತೆ',
   },
   ml: {
+    'nav.mainDashboard': 'പ്രധാന ഡാഷ്‌ബോർഡ്',
     'nav.weatherDesk': 'കാലാവസ്ഥ ഡെസ്ക്',
     'nav.ask': 'WeatherGPT യോട് ചോദിക്കൂ',
     'nav.alerts': 'മുന്നറിയിപ്പ് കേന്ദ്രം',
@@ -498,6 +507,7 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'metric.confidence': 'വിശ്വാസ്യത',
   },
   pa: {
+    'nav.mainDashboard': 'ਮੁੱਖ ਡੈਸ਼ਬੋਰਡ',
     'nav.weatherDesk': 'ਮੌਸਮ ਡੈਸਕ',
     'nav.ask': 'WeatherGPT ਨੂੰ ਪੁੱਛੋ',
     'nav.alerts': 'ਚੇਤਾਵਨੀ ਕੇਂਦਰ',

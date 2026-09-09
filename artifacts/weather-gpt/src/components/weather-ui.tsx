@@ -21,6 +21,7 @@ import {
   Gauge,
   Globe,
   HelpCircle,
+  LayoutDashboard,
   Leaf,
   LocateFixed,
   Map as MapIcon,
@@ -70,7 +71,7 @@ export function LanguageSelector({ compact = false }: { compact?: boolean }) {
 }
 
 const navItemDefs = [
-  { href: '/', translationKey: 'nav.weatherDesk', defaultLabel: 'Weather desk', icon: Compass },
+  { href: '/', translationKey: 'nav.mainDashboard', defaultLabel: 'Main Dashboard', icon: LayoutDashboard },
   { href: '/ask', translationKey: 'nav.ask', defaultLabel: 'Ask WeatherGPT', icon: MessageCircle },
   { href: '/alerts', translationKey: 'nav.alerts', defaultLabel: 'Alert center', icon: ShieldAlert },
   { href: '/map', translationKey: 'nav.map', defaultLabel: 'Signal map', icon: MapIcon },
@@ -90,6 +91,13 @@ export function WeatherShell({ children }: { children: React.ReactNode }) {
     icon: item.icon,
     label: t(item.translationKey) || item.defaultLabel,
   }));
+
+  const isDashboardActive = (href: string) => {
+    if (href === '/') {
+      return location === '/' || location === '/dashboard' || location === '/main-dashboard' || location === '/weather' || location === '/desk';
+    }
+    return location === href;
+  };
 
   return (
     <div className="app-shell noise">
@@ -130,7 +138,7 @@ export function WeatherShell({ children }: { children: React.ReactNode }) {
                 href={item.href}
                 label={item.label}
                 icon={item.icon}
-                active={location === item.href}
+                active={isDashboardActive(item.href)}
               />
             ))}
           </nav>
@@ -193,7 +201,7 @@ export function WeatherShell({ children }: { children: React.ReactNode }) {
                 href={item.href}
                 label={item.label}
                 icon={item.icon}
-                active={location === item.href}
+                active={isDashboardActive(item.href)}
                 onClick={() => setMobileOpen(false)}
               />
             ))}
@@ -208,7 +216,7 @@ export function WeatherShell({ children }: { children: React.ReactNode }) {
               href={item.href}
               label={item.label}
               icon={item.icon}
-              active={location === item.href}
+              active={isDashboardActive(item.href)}
               mobile
             />
           ))}
