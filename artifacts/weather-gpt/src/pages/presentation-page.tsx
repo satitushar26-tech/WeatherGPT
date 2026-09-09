@@ -17,6 +17,7 @@ import {
   Compass,
   Cpu,
   Database,
+  Download,
   ExternalLink,
   Globe,
   Grid,
@@ -1224,6 +1225,29 @@ export function PresentationPage() {
           >
             {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
           </button>
+
+          {/* Download PDF Button */}
+          <a
+            href="/WeatherGPT_SIH2026_Presentation.pdf"
+            download="WeatherGPT_SIH2026_Presentation.pdf"
+            className="flex items-center gap-1.5 rounded-lg border border-red-500/30 bg-red-500/10 px-2.5 py-1.5 text-xs font-bold text-red-600 hover:bg-red-500/20 transition-colors"
+            title="Download Presentation PDF"
+          >
+            <Download className="h-3.5 w-3.5" />
+            <span>PDF</span>
+          </a>
+
+          {/* Download PPTX / Google Slides Button */}
+          <a
+            href="/WeatherGPT_SIH2026_Presentation.pptx"
+            download="WeatherGPT_SIH2026_Presentation.pptx"
+            className="flex items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1.5 text-xs font-bold text-amber-600 hover:bg-amber-500/20 transition-colors"
+            title="Download PowerPoint PPTX (Import into Google Slides)"
+          >
+            <Download className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">PPTX / Google Slides</span>
+            <span className="sm:hidden">PPTX</span>
+          </a>
 
           {/* Print/Export */}
           <button
