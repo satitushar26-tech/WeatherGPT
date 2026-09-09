@@ -19,6 +19,8 @@ import {
   Database,
   Download,
   ExternalLink,
+  FileCheck,
+  FileText,
   Globe,
   Grid,
   HelpCircle,
@@ -60,64 +62,79 @@ interface Slide {
   content: React.ReactNode;
 }
 
+const TEAM_NAME = 'Team WeatherGPT';
+const TEAM_ID = '[Team ID]';
+const TEAM_MEMBERS = [
+  'Harsh Bhanandari',
+  'Tushar Sati',
+  'Hairn Bisht',
+  'Himani Gargoti',
+  'Vinay Joshi',
+  'Himanshi Devli',
+];
+
 export function PresentationPage() {
+  const [deckType, setDeckType] = useState<'official' | 'extended'>('official');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [viewMode, setViewMode] = useState<'deck' | 'grid'>('deck');
   const [showNotes, setShowNotes] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  const slides: Slide[] = [
-    // ----------------- SLIDE 1: Title & Overview -----------------
+  // -------------------------------------------------------------
+  // DECK 1: OFFICIAL SIH 2026 6-SLIDE TEMPLATE (STRICT COMPLIANCE)
+  // -------------------------------------------------------------
+  const officialSlides: Slide[] = [
+    // ----------------- SLIDE 1: TITLE PAGE -----------------
     {
       id: 1,
-      tag: 'SIH 2026 · Problem Statement ID: 26068',
-      title: 'WeatherGPT',
-      subtitle: 'Conversational AI for Weather Forecasting, Alerts, and Climate Information',
+      tag: 'SMART INDIA HACKATHON 2026 · TITLE PAGE',
+      title: 'SMART INDIA HACKATHON 2026',
+      subtitle: 'TITLE PAGE · Problem Statement ID: 26068',
       speakerNotes:
-        'Respected Panel Members, we are presenting our solution for Problem Statement 26068 under the Ministry of Earth Sciences and India Meteorological Department. WeatherGPT bridges India’s complex meteorological data and frontline citizens through real-time conversational intelligence, native voice support, and early disaster alerts.',
+        'Respected Panel Members, we are presenting our idea for Problem Statement 26068: WeatherGPT under the Ministry of Earth Sciences and India Meteorological Department. Our team has developed a conversational AI platform integrating meteorological datasets, forecasting models, and disaster alerts.',
       content: (
-        <div className="flex h-full flex-col justify-between">
-          <div className="space-y-6">
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-[hsl(var(--accent)/.4)] bg-[hsl(var(--accent)/.12)] px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[hsl(var(--accent))]">
-                <Sparkles className="h-3.5 w-3.5" /> Smart India Hackathon 2026
-              </span>
-              <span className="rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--secondary)/.7)] px-3 py-1 text-xs font-semibold text-[hsl(var(--secondary-foreground))]">
-                Problem ID: 26068
-              </span>
-              <span className="rounded-full bg-[#138808]/15 px-3 py-1 text-xs font-semibold text-[#138808]">
-                Theme: Disaster Management · Software
-              </span>
-            </div>
-
-            <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 mono text-xs font-semibold uppercase tracking-widest text-[hsl(var(--primary))]">
-                <Radio className="h-4 w-4 animate-pulse text-[hsl(var(--accent))]" />
-                Ministry of Earth Sciences (MoES) · India Meteorological Department (IMD)
+        <div className="h-full flex flex-col justify-between">
+          <div className="grid md:grid-cols-[1.4fr_1fr] gap-6 items-start">
+            <div className="space-y-4">
+              <div className="space-y-2.5 text-xs sm:text-sm">
+                <div className="flex items-start gap-2">
+                  <span className="font-bold text-[hsl(var(--foreground))] min-w-[200px] shrink-0">• Problem Statement ID –</span>
+                  <span className="mono font-bold text-[hsl(var(--accent))]">26068</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="font-bold text-[hsl(var(--foreground))] min-w-[200px] shrink-0">• Problem Statement Title –</span>
+                  <span className="font-medium text-[hsl(var(--foreground))]">WeatherGPT: Conversational AI for Weather Forecasting, Alerts, and Climate Information</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="font-bold text-[hsl(var(--foreground))] min-w-[200px] shrink-0">• Theme –</span>
+                  <span className="font-semibold text-emerald-600">Disaster Management</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="font-bold text-[hsl(var(--foreground))] min-w-[200px] shrink-0">• PS Category –</span>
+                  <span className="font-semibold text-blue-600">Software</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="font-bold text-[hsl(var(--foreground))] min-w-[200px] shrink-0">• Organization –</span>
+                  <span className="text-[hsl(var(--muted-foreground))]">Ministry of Earth Sciences (MoES) / India Meteorological Department (IMD)</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="font-bold text-[hsl(var(--foreground))] min-w-[200px] shrink-0">• Team ID –</span>
+                  <span className="mono font-semibold text-[hsl(var(--primary))]">{TEAM_ID}</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="font-bold text-[hsl(var(--foreground))] min-w-[200px] shrink-0">• Team Name (Registered) –</span>
+                  <span className="font-bold text-[hsl(var(--accent))]">{TEAM_NAME}</span>
+                </div>
               </div>
-              <h1 className="display text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[hsl(var(--foreground))]">
-                Weather<span className="text-[hsl(var(--accent))]">GPT</span>
-              </h1>
-              <p className="max-w-3xl text-lg sm:text-xl font-medium leading-relaxed text-[hsl(var(--foreground)/.85)]">
-                Next-generation conversational AI transforming raw meteorological feeds, NWP models (GFS/WRF), and disaster warning systems into actionable, multilingual, voice-first intelligence for 1.4 Billion citizens.
-              </p>
 
+              {/* Team Members */}
               <div className="pt-2">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="mono text-[10px] font-bold uppercase tracking-wider text-[hsl(var(--accent))] flex items-center gap-1">
-                    <Users className="h-3 w-3" /> Team:
-                  </span>
-                  {[
-                    'Harsh Bhanandari',
-                    'Tushar Sati',
-                    'Hairn Bisht',
-                    'Himani Gargoti',
-                    'Vinay Joshi',
-                    'Himanshi Devli',
-                  ].map((member) => (
+                <p className="font-bold text-xs text-[hsl(var(--foreground))] mb-2">• Team Members –</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {TEAM_MEMBERS.map((member) => (
                     <span
                       key={member}
-                      className="inline-flex items-center gap-1.5 rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-2.5 py-1 text-xs font-semibold text-[hsl(var(--foreground))] shadow-xs"
+                      className="inline-flex items-center gap-1 rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--secondary)/.5)] px-2.5 py-0.5 text-xs font-semibold text-[hsl(var(--foreground))]"
                     >
                       <span className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--accent))]" />
                       {member}
@@ -126,1046 +143,388 @@ export function PresentationPage() {
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 shadow-sm">
-              <div className="flex items-center justify-between text-[hsl(var(--accent))]">
-                <Globe className="h-5 w-5" />
-                <span className="mono text-[10px] uppercase tracking-wider text-[hsl(var(--muted-foreground))]">Reach</span>
+            {/* Right side emblem / summary */}
+            <div className="rounded-2xl border border-[hsl(var(--border))] bg-gradient-to-br from-[hsl(var(--secondary)/.4)] to-[hsl(var(--card))] p-6 text-center flex flex-col items-center justify-center min-h-[280px]">
+              <div className="grid h-16 w-16 place-items-center rounded-2xl bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] shadow-md mb-3">
+                <CloudSun className="h-9 w-9 text-[hsl(var(--accent))]" />
               </div>
-              <div className="mt-2 text-2xl font-bold">8+ Languages</div>
-              <div className="text-xs text-[hsl(var(--muted-foreground))]">Indian languages + voice recognition</div>
-            </div>
-
-            <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 shadow-sm">
-              <div className="flex items-center justify-between text-[hsl(var(--primary))]">
-                <Cpu className="h-5 w-5" />
-                <span className="mono text-[10px] uppercase tracking-wider text-[hsl(var(--muted-foreground))]">Compute</span>
+              <h3 className="display text-2xl font-bold text-[hsl(var(--foreground))]">WeatherGPT</h3>
+              <p className="mono text-[11px] uppercase tracking-wider text-[hsl(var(--accent))] mt-0.5 font-bold">
+                SIH 2026 Submission
+              </p>
+              <p className="text-xs text-[hsl(var(--muted-foreground))] mt-3 max-w-xs leading-relaxed">
+                Conversational AI platform integrating real-time NWP models, CAP disaster warning systems, and multilingual voice for 1.4 Billion citizens.
+              </p>
+              <div className="mt-4 rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+                ✔ Operational Prototype Ready
               </div>
-              <div className="mt-2 text-2xl font-bold">NWP & GFS/WRF</div>
-              <div className="text-xs text-[hsl(var(--muted-foreground))]">Numerical weather prediction sync</div>
-            </div>
-
-            <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 shadow-sm">
-              <div className="flex items-center justify-between text-[#9c3d2b]">
-                <ShieldAlert className="h-5 w-5" />
-                <span className="mono text-[10px] uppercase tracking-wider text-[hsl(var(--muted-foreground))]">Disaster</span>
-              </div>
-              <div className="mt-2 text-2xl font-bold">CAP v1.2 Alerts</div>
-              <div className="text-xs text-[hsl(var(--muted-foreground))]">Color-coded early warning lifeline</div>
-            </div>
-
-            <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 shadow-sm">
-              <div className="flex items-center justify-between text-[#2d7d46]">
-                <Smartphone className="h-5 w-5" />
-                <span className="mono text-[10px] uppercase tracking-wider text-[hsl(var(--muted-foreground))]">Delivery</span>
-              </div>
-              <div className="mt-2 text-2xl font-bold">Web + PWA</div>
-              <div className="text-xs text-[hsl(var(--muted-foreground))]">Zero install · Offline disaster cache</div>
             </div>
           </div>
         </div>
       ),
     },
 
-    // ----------------- SLIDE 2: Background & Problem Statement -----------------
+    // ----------------- SLIDE 2: PROPOSED SOLUTION -----------------
     {
       id: 2,
-      tag: 'Context & Ground Realities',
-      title: 'The Core Problem: Data Fragmentation & Last-Mile Void',
-      subtitle: 'Why existing meteorological dissemination systems fail frontline users and disaster managers',
+      tag: 'SIH Template Slide 2',
+      title: 'IDEA TITLE: WeatherGPT',
+      subtitle: '❖ Proposed Solution (Describe your Idea/Solution/Prototype)',
       speakerNotes:
-        'Currently, meteorological data is abundant but trapped in silos: complex PDFs, satellite feeds, and synoptic maps. For a farmer in Vidarbha or a disaster coordinator in Cuttack, interpreting an isobar map is impossible. There is a huge latency gap between an IMD forecast and real-world citizen decisions.',
+        'Slide 2 covers the 3 mandatory pointers from the SIH template: Detailed explanation of WeatherGPT, how it addresses data fragmentation and language barriers, and its unique innovation including our Web App + PWA approach for universal accessibility.',
       content: (
-        <div className="h-full flex flex-col justify-between space-y-6">
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-5">
-              <div className="flex items-center gap-2.5 text-destructive">
-                <ShieldAlert className="h-5 w-5" />
-                <h3 className="font-bold text-base">The Current Status Quo (Pain Points)</h3>
-              </div>
-              <ul className="mt-4 space-y-3 text-sm text-[hsl(var(--foreground)/.85)]">
-                <li className="flex items-start gap-2">
-                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-destructive shrink-0" />
-                  <span><strong>Scattered Portals:</strong> Data is split across IMD Mausam, Meghdoot, Damini, Umang, and satellite bulletins, confusing citizens.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-destructive shrink-0" />
-                  <span><strong>High Cognitive Load:</strong> Technical jargon (e.g. synoptic depressions, millibar pressure) cannot be interpreted by rural users.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-destructive shrink-0" />
-                  <span><strong>Language & Literacy Divide:</strong> Most bulletins are text-heavy in English/Hindi; 70%+ of rural farming families require voice and local mother tongues.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-destructive shrink-0" />
-                  <span><strong>No Contextual Decision Support:</strong> "40mm rain expected" doesn't answer: "Can I harvest today? Should flights divert? Should schools close?"</span>
-                </li>
-              </ul>
-            </div>
+        <div className="h-full flex flex-col justify-between space-y-4 text-xs sm:text-sm">
+          {/* Section 1 */}
+          <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4">
+            <h4 className="font-bold text-xs text-[hsl(var(--primary))] flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-[hsl(var(--accent))]" />
+              1. Detailed explanation of the proposed solution:
+            </h4>
+            <p className="mt-1.5 text-xs text-[hsl(var(--foreground)/.85)] leading-relaxed">
+              <strong>WeatherGPT</strong> is an intelligent conversational meteorological platform that ingests real-time observation telemetry (AWS stations), Numerical Weather Prediction (NWP GFS 0.25° & WRF) models, and disaster feeds (CAP v1.2). It translates dense atmospheric physics into contextual, plain-language decisions with full voice input/output in 8+ Indian regional languages.
+            </p>
+          </div>
 
-            <div className="rounded-2xl border border-[hsl(var(--primary)/.3)] bg-[hsl(var(--primary)/.05)] p-5">
-              <div className="flex items-center gap-2.5 text-[hsl(var(--primary))]">
-                <Target className="h-5 w-5" />
-                <h3 className="font-bold text-base">The Urgent Need (MoES Mandate)</h3>
+          {/* Section 2 */}
+          <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4">
+            <h4 className="font-bold text-xs text-[hsl(var(--primary))] flex items-center gap-2">
+              <Target className="h-4 w-4 text-emerald-600" />
+              2. How it addresses the problem:
+            </h4>
+            <div className="mt-2 grid sm:grid-cols-2 gap-2 text-xs text-[hsl(var(--foreground)/.85)]">
+              <div className="rounded-lg bg-[hsl(var(--secondary)/.4)] p-2.5">
+                <strong>• Eliminates Fragmentation:</strong> Unifies separate IMD portals, radar images, and synoptic charts into a single conversational desk.
               </div>
-              <ul className="mt-4 space-y-3 text-sm text-[hsl(var(--foreground)/.85)]">
-                <li className="flex items-start gap-2">
-                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-[hsl(var(--primary))] shrink-0" />
-                  <span><strong>Unified Intelligence Layer:</strong> A single conversational gateway that aggregates observational telemetry, NWP runs, and alerts.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-[hsl(var(--primary))] shrink-0" />
-                  <span><strong>Plain-Language Synthesis:</strong> Converting numerical vectors into concise, unambiguous action steps.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-[hsl(var(--primary))] shrink-0" />
-                  <span><strong>Zero-Friction Access:</strong> Accessible on any smartphone, feature phone browser, or desktop without app-store installation overhead.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-[hsl(var(--primary))] shrink-0" />
-                  <span><strong>Early Disaster Dissemination:</strong> Instant delivery of Common Alerting Protocol (CAP) warnings to avert loss of life and property.</span>
-                </li>
-              </ul>
+              <div className="rounded-lg bg-[hsl(var(--secondary)/.4)] p-2.5">
+                <strong>• Removes Technical Jargon:</strong> Answers citizen questions directly (e.g. "Can I spray my cotton crop today?") rather than reporting isobar millibars.
+              </div>
+              <div className="rounded-lg bg-[hsl(var(--secondary)/.4)] p-2.5">
+                <strong>• Bridges Literacy Divide:</strong> Speech-to-text (STT) and voice audio readouts empower rural farmers who cannot read text bulletins.
+              </div>
+              <div className="rounded-lg bg-[hsl(var(--secondary)/.4)] p-2.5">
+                <strong>• Accelerates Early Warning:</strong> Common Alerting Protocol (CAP) delivers instantaneous Red/Orange/Yellow disaster bulletins.
+              </div>
             </div>
           </div>
 
-          <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--secondary)/.4)] p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="grid h-10 w-10 place-items-center rounded-lg bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))] font-bold">
-                SIH
+          {/* Section 3 */}
+          <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4">
+            <h4 className="font-bold text-xs text-[hsl(var(--primary))] flex items-center gap-2">
+              <Award className="h-4 w-4 text-[hsl(var(--accent))]" />
+              3. Innovation and uniqueness of the solution:
+            </h4>
+            <div className="mt-2 grid sm:grid-cols-3 gap-2 text-xs">
+              <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-2.5">
+                <strong className="text-emerald-800 dark:text-emerald-300 block">Web App + PWA Architecture:</strong>
+                <span className="text-[11px] text-[hsl(var(--foreground)/.8)]">Covers broader device space with &lt;2MB footprint, zero app-store download hurdle, and offline caching during disaster blackouts.</span>
               </div>
-              <div>
-                <p className="text-xs font-semibold text-[hsl(var(--foreground))]">Problem Statement Statement 26068 Core Goal:</p>
-                <p className="text-xs text-[hsl(var(--muted-foreground))]">
-                  Develop an AI-powered chatbot platform named WeatherGPT integrating meteorological datasets, forecasting models, and disaster warning systems.
-                </p>
+              <div className="rounded-lg border border-[hsl(var(--accent)/.3)] bg-[hsl(var(--accent)/.08)] p-2.5">
+                <strong className="text-[hsl(var(--accent))] block">Grounded AI (Zero Hallucinations):</strong>
+                <span className="text-[11px] text-[hsl(var(--foreground)/.8)]">Combines conversational LLMs with deterministic weather function calling and meteorological boundary checks.</span>
+              </div>
+              <div className="rounded-lg border border-blue-500/30 bg-blue-500/10 p-2.5">
+                <strong className="text-blue-700 dark:text-blue-300 block">Multilingual Voice-First:</strong>
+                <span className="text-[11px] text-[hsl(var(--foreground)/.8)]">Built-in regional speech recognition and audio synthesis enabling hands-free use in rural agricultural fields.</span>
               </div>
             </div>
-            <Link href="/ask" className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold text-[hsl(var(--primary))] hover:underline">
-              Test Live Query <ArrowUpRight className="h-3.5 w-3.5" />
-            </Link>
           </div>
         </div>
       ),
     },
 
-    // ----------------- SLIDE 3: The Solution (WeatherGPT) -----------------
+    // ----------------- SLIDE 3: TECHNICAL APPROACH -----------------
     {
       id: 3,
-      tag: 'Proposed Solution',
-      title: 'WeatherGPT: Intelligent Conversational Weather Desk',
-      subtitle: 'Grounding Generative AI in Meteorological Truth & Operational Physics',
+      tag: 'SIH Template Slide 3',
+      title: 'TECHNICAL APPROACH',
+      subtitle: 'Technologies & Implementation Methodology',
       speakerNotes:
-        'WeatherGPT is not just a generic LLM. It is an end-to-end meteorological agent. It employs Retrieval-Augmented Generation (RAG) and direct function calling against live telemetry, NWP numerical models (GFS/WRF), and IMD disaster feeds. This guarantees factual precision with zero hallucinations.',
+        'Slide 3 specifies our technical stack and implementation methodology. We demonstrate our 4-tier pipeline from ingestion to PWA client and highlight that the prototype is currently operational.',
       content: (
-        <div className="h-full flex flex-col justify-between space-y-5">
-          <div className="grid md:grid-cols-3 gap-4">
-            <div className="rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-5 shadow-sm hover:border-[hsl(var(--primary))] transition-colors">
-              <div className="grid h-10 w-10 place-items-center rounded-xl bg-[hsl(var(--primary)/.12)] text-[hsl(var(--primary))] mb-3">
-                <Compass className="h-5 w-5" />
+        <div className="h-full flex flex-col justify-between space-y-4">
+          {/* Technologies Box */}
+          <div>
+            <h4 className="font-bold text-xs text-[hsl(var(--foreground))] mb-2 flex items-center gap-2">
+              <Cpu className="h-4 w-4 text-[hsl(var(--primary))]" />
+              • Technologies to be used (programming languages, frameworks, hardware):
+            </h4>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+              <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3">
+                <span className="mono text-[10px] font-bold text-[hsl(var(--accent))] uppercase block">Frontend / Client</span>
+                <p className="font-semibold text-xs mt-1 text-[hsl(var(--foreground))]">React 19 & Tailwind</p>
+                <p className="text-[11px] text-[hsl(var(--muted-foreground))] mt-1">Vite, Leaflet GIS Map, Recharts, Web Speech API (Voice STT/TTS)</p>
               </div>
-              <h3 className="font-bold text-base text-[hsl(var(--foreground))]">1. Real-Time Telemetry Desk</h3>
-              <p className="mt-2 text-xs leading-relaxed text-[hsl(var(--muted-foreground))]">
-                Continuous ingestion of temperature, heat index, wind vectors, pressure, humidity, and rainfall probability across Indian districts.
-              </p>
-              <div className="mt-4 flex items-center gap-2 text-[11px] font-semibold text-[hsl(var(--primary))]">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" /> Live Data Connectors Active
+              <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3">
+                <span className="mono text-[10px] font-bold text-[hsl(var(--primary))] uppercase block">Backend / APIs</span>
+                <p className="font-semibold text-xs mt-1 text-[hsl(var(--foreground))]">FastAPI / Node.js</p>
+                <p className="text-[11px] text-[hsl(var(--muted-foreground))] mt-1">Express, OpenAPI codegen, Zod validation, PostgreSQL + Drizzle ORM</p>
               </div>
-            </div>
-
-            <div className="rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-5 shadow-sm hover:border-[hsl(var(--accent))] transition-colors">
-              <div className="grid h-10 w-10 place-items-center rounded-xl bg-[hsl(var(--accent)/.15)] text-[hsl(var(--accent))] mb-3">
-                <MessageCircle className="h-5 w-5" />
+              <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3">
+                <span className="mono text-[10px] font-bold text-emerald-600 uppercase block">AI & Telemetry</span>
+                <p className="font-semibold text-xs mt-1 text-[hsl(var(--foreground))]">Grounded LLM RAG</p>
+                <p className="text-[11px] text-[hsl(var(--muted-foreground))] mt-1">Tool calling, WIS 2.0 / MQTT standard, GFS 0.25° NWP, WRF, CAP v1.2</p>
               </div>
-              <h3 className="font-bold text-base text-[hsl(var(--foreground))]">2. Conversational AI + Voice</h3>
-              <p className="mt-2 text-xs leading-relaxed text-[hsl(var(--muted-foreground))]">
-                Understands natural language questions in regional Indian dialects. Speaks answers aloud using Speech Synthesis for illiterate and rural farmers.
-              </p>
-              <div className="mt-4 flex items-center gap-2 text-[11px] font-semibold text-[hsl(var(--accent))]">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" /> Multilingual Voice STT/TTS
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-5 shadow-sm hover:border-[#9c3d2b] transition-colors">
-              <div className="grid h-10 w-10 place-items-center rounded-xl bg-[#9c3d2b]/10 text-[#9c3d2b] mb-3">
-                <ShieldAlert className="h-5 w-5" />
-              </div>
-              <h3 className="font-bold text-base text-[hsl(var(--foreground))]">3. CAP Early Warning Radar</h3>
-              <p className="mt-2 text-xs leading-relaxed text-[hsl(var(--muted-foreground))]">
-                Common Alerting Protocol (CAP) integration parses Red/Orange/Yellow warnings with geo-tagged maps, severity pills, and emergency evacuation protocols.
-              </p>
-              <div className="mt-4 flex items-center gap-2 text-[11px] font-semibold text-[#9c3d2b]">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" /> Geo-Mapped Alert Engine
+              <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3">
+                <span className="mono text-[10px] font-bold text-blue-600 uppercase block">Scale & PWA</span>
+                <p className="font-semibold text-xs mt-1 text-[hsl(var(--foreground))]">Docker & K8s Ready</p>
+                <p className="text-[11px] text-[hsl(var(--muted-foreground))] mt-1">Stateless microservices, Service Worker cache, Edge CDN optimized</p>
               </div>
             </div>
           </div>
 
-          <div className="rounded-2xl bg-gradient-to-r from-[hsl(var(--primary))] to-[#12363e] p-5 text-white shadow-md">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <span className="mono text-[10px] uppercase tracking-widest text-[hsl(var(--accent))]">
-                  Operational Innovation
-                </span>
-                <h4 className="display text-xl font-bold mt-1">
-                  Why Conversational AI Outperforms Traditional Weather Dashboards
-                </h4>
-                <p className="text-xs text-white/80 mt-1 max-w-2xl">
-                  Traditional dashboards force users to decipher numbers. WeatherGPT acts as an intelligent meteorologist: synthesizing atmospheric indices, crop calendar cycles, and safety guidelines into immediate human decisions.
-                </p>
+          {/* Methodology & Flowchart */}
+          <div>
+            <h4 className="font-bold text-xs text-[hsl(var(--foreground))] mb-2 flex items-center gap-2">
+              <Layers className="h-4 w-4 text-[hsl(var(--primary))]" />
+              • Methodology and process for implementation (Flow Charts / Images / Working Prototype):
+            </h4>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+              <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3">
+                <span className="mono text-[10px] font-bold text-[hsl(var(--accent))]">STEP 1</span>
+                <p className="font-bold text-xs mt-1 text-[hsl(var(--foreground))]">Telemetry Ingestion</p>
+                <p className="text-[11px] text-[hsl(var(--muted-foreground))] mt-1">IMD AWS, GFS 0.25° grids, and CAP warning feeds ingested via MQTT & APIs.</p>
               </div>
-              <Link
-                href="/ask"
-                className="shrink-0 rounded-xl bg-[hsl(var(--accent))] px-4 py-2.5 text-xs font-bold text-[hsl(var(--accent-foreground))] shadow-md hover:scale-105 transition-transform"
-              >
-                Launch AI Assistant →
-              </Link>
+              <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3">
+                <span className="mono text-[10px] font-bold text-[hsl(var(--primary))]">STEP 2</span>
+                <p className="font-bold text-xs mt-1 text-[hsl(var(--foreground))]">Semantic Processing</p>
+                <p className="text-[11px] text-[hsl(var(--muted-foreground))] mt-1">Geospatial indexing, cache normalization, and agro-bulletin vector search.</p>
+              </div>
+              <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3">
+                <span className="mono text-[10px] font-bold text-emerald-600">STEP 3</span>
+                <p className="font-bold text-xs mt-1 text-[hsl(var(--foreground))]">Grounded AI Engine</p>
+                <p className="text-[11px] text-[hsl(var(--muted-foreground))] mt-1">Query intent classifier + deterministic weather tool calling + guardrails.</p>
+              </div>
+              <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3">
+                <span className="mono text-[10px] font-bold text-blue-600">STEP 4</span>
+                <p className="font-bold text-xs mt-1 text-[hsl(var(--foreground))]">PWA Multi-Channel</p>
+                <p className="text-[11px] text-[hsl(var(--muted-foreground))] mt-1">Web link delivery, offline disaster caching, Leaflet GIS map, and voice synthesis.</p>
+              </div>
             </div>
+          </div>
+
+          {/* Prototype Badge */}
+          <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 flex items-center justify-between text-xs">
+            <span className="text-emerald-800 dark:text-emerald-200 font-semibold">
+              ✔ <strong>Working Prototype Operational Today:</strong> 6 live modules running at http://localhost:3000/
+            </span>
+            <Link href="/" className="font-bold text-emerald-700 dark:text-emerald-300 underline flex items-center gap-1">
+              Test Live App <ArrowUpRight className="h-3.5 w-3.5" />
+            </Link>
           </div>
         </div>
       ),
     },
 
-    // ----------------- SLIDE 4: Why Web App + PWA (Crucial User Requirement) -----------------
+    // ----------------- SLIDE 4: FEASIBILITY AND VIABILITY -----------------
     {
       id: 4,
-      tag: 'Strategic Architectural Choice',
-      title: 'Why We Built a Web Application with PWA Capability',
-      subtitle: 'Broader Space Coverage, Universal Access, Zero Download Barrier, and Disaster Resilience',
+      tag: 'SIH Template Slide 4',
+      title: 'FEASIBILITY AND VIABILITY',
+      subtitle: 'Analysis, Potential Challenges, Risks, and Mitigation Strategies',
       speakerNotes:
-        'A critical question the panel often asks is: Why did you build a web application instead of a closed native app? Our answer is foundational: India has over 800 million internet users with immense device diversity. Native apps require 50MB+ downloads from Google Play, heavy memory, and manual updates. A web app with Progressive Web App (PWA) capabilities covers a drastically broader space: instant access via a web link, installable with one tap, offline caching during cyclone blackouts, and zero storage penalty.',
+        'Slide 4 covers Feasibility, Risks, and Mitigation Strategies. We highlight how our zero-temperature tool calling prevents AI hallucination, and how PWA offline caching ensures survival during network blackouts.',
       content: (
-        <div className="h-full flex flex-col justify-between space-y-4">
-          <div className="grid md:grid-cols-2 gap-5">
-            {/* Column 1: The Advantages */}
-            <div className="space-y-3">
-              <div className="rounded-xl border border-emerald-500/30 bg-emerald-50/70 dark:bg-emerald-950/20 p-4">
-                <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-bold text-sm">
-                  <Globe className="h-4 w-4" />
-                  <span>1. Universal Reach (Covers Broader Space)</span>
-                </div>
-                <p className="mt-1 text-xs text-[hsl(var(--foreground)/.8)] leading-relaxed">
-                  Accessible instantly across <strong>Android, iOS, Windows, Linux, Mac, feature-phone browsers, tablet kiosks, and disaster control room video walls</strong> with zero installation friction or OS version restrictions.
-                </p>
-              </div>
-
-              <div className="rounded-xl border border-[hsl(var(--accent)/.3)] bg-[hsl(var(--accent)/.06)] p-4">
-                <div className="flex items-center gap-2 text-[hsl(var(--accent))] font-bold text-sm">
-                  <Smartphone className="h-4 w-4" />
-                  <span>2. PWA "Add to Home Screen" & Lightweight (&lt;2 MB)</span>
-                </div>
-                <p className="mt-1 text-xs text-[hsl(var(--foreground)/.8)] leading-relaxed">
-                  Rural citizens frequently use budget smartphones with limited internal storage (16GB/32GB). While native apps consume 50MB–100MB, WeatherGPT PWA runs at <strong>under 2MB</strong>, launches instantly, and feels 100% native.
-                </p>
-              </div>
-
-              <div className="rounded-xl border border-blue-500/30 bg-blue-50/70 dark:bg-blue-950/20 p-4">
-                <div className="flex items-center gap-2 text-blue-700 dark:text-blue-400 font-bold text-sm">
-                  <WifiOff className="h-4 w-4" />
-                  <span>3. Offline Disaster Resilience (Service Worker Caching)</span>
-                </div>
-                <p className="mt-1 text-xs text-[hsl(var(--foreground)/.8)] leading-relaxed">
-                  During severe cyclones or flash floods, cellular towers often collapse. WeatherGPT's PWA caches essential disaster safety checklists, evacuation guidelines, and last-verified forecasts so they remain accessible offline.
-                </p>
-              </div>
+        <div className="h-full flex flex-col justify-between space-y-3.5 text-xs sm:text-sm">
+          {/* 1. Feasibility Analysis */}
+          <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3.5">
+            <h4 className="font-bold text-xs text-[hsl(var(--foreground))] mb-1.5 flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+              • Analysis of the feasibility of the idea:
+            </h4>
+            <div className="grid sm:grid-cols-2 gap-2 text-xs text-[hsl(var(--foreground)/.85)]">
+              <div><strong>• Technical Feasibility:</strong> Battle-tested modern stack (React 19, FastAPI, PostgreSQL) with working prototype operational.</div>
+              <div><strong>• Operational Feasibility:</strong> Fully complies with WMO WIS 2.0 & IMD standard open data formats.</div>
+              <div><strong>• Economic Feasibility:</strong> Open-source components eliminate licensing costs; low cloud footprint.</div>
+              <div><strong>• Adoption Feasibility:</strong> PWA format eliminates the 50MB app-store barrier — accessible via 1-click web link.</div>
             </div>
+          </div>
 
-            {/* Column 2: Comparison Matrix */}
-            <div className="rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-5 shadow-sm flex flex-col justify-between">
-              <div>
-                <h4 className="font-bold text-sm text-[hsl(var(--foreground))] mb-3 flex items-center gap-2">
-                  <Layers className="h-4 w-4 text-[hsl(var(--primary))]" />
-                  Strategic Comparison: Web/PWA vs. Native Mobile App
-                </h4>
-                <div className="space-y-2 text-xs">
-                  <div className="grid grid-cols-3 gap-2 border-b border-[hsl(var(--border))] pb-2 font-bold text-[hsl(var(--muted-foreground))]">
-                    <span>Criterion</span>
-                    <span>Native App</span>
-                    <span className="text-emerald-600 font-bold">WeatherGPT Web+PWA</span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2 py-1.5 border-b border-[hsl(var(--border)/.5)]">
-                    <span className="font-semibold">Device Footprint</span>
-                    <span className="text-destructive">50MB – 120MB</span>
-                    <span className="text-emerald-700 font-bold">&lt; 2MB (Instant)</span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2 py-1.5 border-b border-[hsl(var(--border)/.5)]">
-                    <span className="font-semibold">Installation Barrier</span>
-                    <span className="text-destructive">Store account needed</span>
-                    <span className="text-emerald-700 font-bold">Zero install (1-tap URL)</span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2 py-1.5 border-b border-[hsl(var(--border)/.5)]">
-                    <span className="font-semibold">Emergency Sharing</span>
-                    <span className="text-destructive">App install roadblock</span>
-                    <span className="text-emerald-700 font-bold">1-click SMS/WhatsApp link</span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2 py-1.5 border-b border-[hsl(var(--border)/.5)]">
-                    <span className="font-semibold">Cross-Platform</span>
-                    <span className="text-destructive">Separate Android/iOS</span>
-                    <span className="text-emerald-700 font-bold">Unified single codebase</span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2 py-1.5">
-                    <span className="font-semibold">Emergency Broadcast</span>
-                    <span>Requires installed app</span>
-                    <span className="text-emerald-700 font-bold">Web Push API supported</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-4 rounded-xl bg-[hsl(var(--secondary)/.6)] p-3 text-xs text-[hsl(var(--foreground)/.85)]">
-                <strong>Verdict for MoES / IMD:</strong> For a national public utility, frictionless web reach ensures no citizen is excluded due to phone brand, OS version, or low storage.
-              </div>
+          {/* 2 & 3. Challenges & Mitigation Table */}
+          <div>
+            <h4 className="font-bold text-xs text-[hsl(var(--foreground))] mb-2 flex items-center gap-2">
+              <ShieldAlert className="h-4 w-4 text-[hsl(var(--accent))]" />
+              • Potential challenges and risks & Strategies for overcoming them:
+            </h4>
+            <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] overflow-hidden shadow-xs">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-[hsl(var(--border))] bg-[hsl(var(--secondary)/.5)] text-[hsl(var(--foreground))]">
+                    <th className="p-2 font-bold w-1/4">Challenge / Risk Area</th>
+                    <th className="p-2 font-bold w-1/3 text-destructive">Potential Vulnerability</th>
+                    <th className="p-2 font-bold text-emerald-600">Strategy for Overcoming Challenges</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[hsl(var(--border))] text-[11px] text-[hsl(var(--foreground)/.85)]">
+                  <tr>
+                    <td className="p-2 font-semibold">1. AI Hallucination</td>
+                    <td className="p-2 text-destructive">LLMs inventing weather data could endanger public safety.</td>
+                    <td className="p-2 text-emerald-700 dark:text-emerald-300 font-medium">Strict deterministic tool-calling; temperature=0; physical parameter boundary checks.</td>
+                  </tr>
+                  <tr>
+                    <td className="p-2 font-semibold">2. Network Collapse</td>
+                    <td className="p-2 text-destructive">Cyclones destroy mobile towers, cutting connectivity.</td>
+                    <td className="p-2 text-emerald-700 dark:text-emerald-300 font-medium">PWA Service Worker caches survival guides & last forecasts; planned LoRaWAN mesh fallback.</td>
+                  </tr>
+                  <tr>
+                    <td className="p-2 font-semibold">3. Linguistic Diversity</td>
+                    <td className="p-2 text-destructive">Complex rural dialects with high accent variability.</td>
+                    <td className="p-2 text-emerald-700 dark:text-emerald-300 font-medium">Web Speech API with regional dialect acoustic models; prompt normalization into weather intents.</td>
+                  </tr>
+                  <tr>
+                    <td className="p-2 font-semibold">4. Concurrency Spikes</td>
+                    <td className="p-2 text-destructive">Millions of queries during impending cyclones.</td>
+                    <td className="p-2 text-emerald-700 dark:text-emerald-300 font-medium">Stateless microservices auto-scaled on Kubernetes; Edge CDN caching on district tiles.</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
       ),
     },
 
-    // ----------------- SLIDE 5: Key Features (1-8 Mapped) -----------------
+    // ----------------- SLIDE 5: IMPACT AND BENEFITS -----------------
     {
       id: 5,
-      tag: 'Problem Statement Alignment',
-      title: 'Key Features & Capabilities Matrix',
-      subtitle: 'Complete 1-to-1 fulfillment of all 8 core features specified in PS 26068',
+      tag: 'SIH Template Slide 5',
+      title: 'IMPACT AND BENEFITS',
+      subtitle: 'Target Audience Impact and Socio-Economic-Environmental Returns',
       speakerNotes:
-        'Every single key feature requested in the problem description is implemented and functional in our prototype. From NWP model integration to Indian language multilingual support, extreme alerts, and voice interaction for rural accessibility.',
+        'Slide 5 demonstrates our multidimensional impact: safeguarding over 700 million rural citizens, empowering disaster rescue teams, and generating massive economic and environmental returns.',
       content: (
-        <div className="h-full flex flex-col justify-between">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-            {[
-              {
-                num: '01',
-                title: 'Real-Time Retrieval',
-                icon: Thermometer,
-                desc: 'Instant temperature, precipitation, wind, humidity, pressure, and UV index for all Indian regions.',
-                badge: 'Live Active',
-              },
-              {
-                num: '02',
-                title: 'Natural Language Querying',
-                icon: MessageCircle,
-                desc: 'Multi-turn conversational dialogue with domain grounding in Indian geography and seasonal patterns.',
-                badge: 'LLM RAG',
-              },
-              {
-                num: '03',
-                title: 'NWP Model Integration',
-                icon: Cpu,
-                desc: 'Numerical Weather Prediction support (GFS 0.25° & WRF mesoscale) for multi-day probabilistic outlooks.',
-                badge: 'GFS / WRF',
-              },
-              {
-                num: '04',
-                title: 'Extreme Weather Alerts',
-                icon: ShieldAlert,
-                desc: 'Common Alerting Protocol (CAP) ingestion with Red/Orange/Yellow warnings & response protocols.',
-                badge: 'CAP v1.2',
-              },
-              {
-                num: '05',
-                title: 'Location & Field Advisory',
-                icon: Sprout,
-                desc: 'Tailored agro-meteorological advisories for farmers (sowing, spraying, irrigation) and travel briefs.',
-                badge: 'Agro-Domain',
-              },
-              {
-                num: '06',
-                title: 'Multilingual Capability',
-                icon: Globe,
-                desc: 'Built-in support for Hindi, Marathi, Bengali, Tamil, Telugu, English and regional Indian dialects.',
-                badge: '8+ Languages',
-              },
-              {
-                num: '07',
-                title: 'Climate Trend Analysis',
-                icon: BarChart3,
-                desc: 'Decadal temperature anomalies, monthly rainfall variance versus historical baselines.',
-                badge: 'Decadal Recharts',
-              },
-              {
-                num: '08',
-                title: 'Voice Rural Accessibility',
-                icon: Mic,
-                desc: 'Web Speech API microphone input and natural speech synthesis for illiterate & rural citizens.',
-                badge: 'Voice STT/TTS',
-              },
-            ].map((feat) => {
-              const Icon = feat.icon;
-              return (
-                <div
-                  key={feat.num}
-                  className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <span className="mono text-[10px] font-bold text-[hsl(var(--accent))]">
-                        REQ #{feat.num}
-                      </span>
-                      <span className="rounded-full bg-[hsl(var(--secondary))] px-2 py-0.5 text-[9px] font-bold text-[hsl(var(--primary))] uppercase">
-                        {feat.badge}
-                      </span>
-                    </div>
-                    <div className="mt-3 flex items-center gap-2">
-                      <div className="grid h-7 w-7 place-items-center rounded-lg bg-[hsl(var(--primary)/.1)] text-[hsl(var(--primary))] shrink-0">
-                        <Icon className="h-4 w-4" />
-                      </div>
-                      <h4 className="font-bold text-xs text-[hsl(var(--foreground))]">{feat.title}</h4>
-                    </div>
-                    <p className="mt-2 text-[11px] leading-relaxed text-[hsl(var(--muted-foreground))]">
-                      {feat.desc}
-                    </p>
-                  </div>
-                  <div className="mt-3 flex items-center gap-1.5 text-[10px] font-semibold text-emerald-600">
-                    <CheckCircle2 className="h-3 w-3" /> Fully Operational
-                  </div>
-                </div>
-              );
-            })}
+        <div className="h-full flex flex-col justify-between space-y-4">
+          {/* Target Audience */}
+          <div>
+            <h4 className="font-bold text-xs text-[hsl(var(--foreground))] mb-2 flex items-center gap-2">
+              <Users className="h-4 w-4 text-[hsl(var(--primary))]" />
+              • Potential impact on the target audience:
+            </h4>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+              <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3">
+                <span className="font-bold text-emerald-600 block">🌾 Farmers (700M+)</span>
+                <p className="text-[11px] text-[hsl(var(--muted-foreground))] mt-1">Crop advisories in regional voice; optimal pesticide, sowing, and harvest timing protecting farm income.</p>
+              </div>
+              <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3">
+                <span className="font-bold text-red-600 block">🚨 Disaster NDRF/SDMA</span>
+                <p className="text-[11px] text-[hsl(var(--muted-foreground))] mt-1">Early dissemination of CAP bulletins with rapid evacuation checklists and hourly inundation alerts.</p>
+              </div>
+              <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3">
+                <span className="font-bold text-blue-600 block">✈️ Aviation & Logistics</span>
+                <p className="text-[11px] text-[hsl(var(--muted-foreground))] mt-1">Plain-language METAR/TAF translation, crosswind hazard alerts, and highway visibility warnings.</p>
+              </div>
+              <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3">
+                <span className="font-bold text-amber-600 block">🏙️ Smart Cities</span>
+                <p className="text-[11px] text-[hsl(var(--muted-foreground))] mt-1">Urban heat island monitoring, stormwater drainage warnings, and decadal anomaly climate research.</p>
+              </div>
+            </div>
           </div>
 
-          <div className="mt-3 flex items-center justify-between rounded-xl bg-[hsl(var(--secondary)/.5)] px-4 py-2 text-xs">
-            <span className="text-[hsl(var(--muted-foreground))]">
-              All 8 features are fully mapped, tested, and demonstrated in this live deployment.
-            </span>
-            <span className="font-bold text-[hsl(var(--primary))]">100% Problem Statement Coverage</span>
+          {/* Benefits */}
+          <div>
+            <h4 className="font-bold text-xs text-[hsl(var(--foreground))] mb-2 flex items-center gap-2">
+              <Award className="h-4 w-4 text-[hsl(var(--accent))]" />
+              • Benefits of the solution (social, economic, environmental, etc.):
+            </h4>
+            <div className="grid sm:grid-cols-3 gap-3 text-xs">
+              <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3.5">
+                <span className="font-bold text-emerald-800 dark:text-emerald-300 text-sm block mb-1">Social Benefits</span>
+                <ul className="space-y-1 text-[11px] text-[hsl(var(--foreground)/.85)]">
+                  <li>• Saves lives through timely, location-based early warnings.</li>
+                  <li>• Empowers non-literate citizens through voice interaction.</li>
+                  <li>• Reduces panic with clear, actionable safety instructions.</li>
+                </ul>
+              </div>
+              <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-3.5">
+                <span className="font-bold text-blue-800 dark:text-blue-300 text-sm block mb-1">Economic Benefits</span>
+                <ul className="space-y-1 text-[11px] text-[hsl(var(--foreground)/.85)]">
+                  <li>• Mitigates ₹50,000+ Cr annual agricultural weather damage.</li>
+                  <li>• Reduces commercial aviation flight diversions and fuel burn.</li>
+                  <li>• Minimizes civic municipal damage from localized flash flooding.</li>
+                </ul>
+              </div>
+              <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3.5">
+                <span className="font-bold text-amber-800 dark:text-amber-300 text-sm block mb-1">Environmental Benefits</span>
+                <ul className="space-y-1 text-[11px] text-[hsl(var(--foreground)/.85)]">
+                  <li>• Enables sustainable groundwater and irrigation management.</li>
+                  <li>• Tracks decadal temperature & monsoon onset shifts.</li>
+                  <li>• Facilitates science-driven national disaster resilience policy.</li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       ),
     },
 
-    // ----------------- SLIDE 6: System Architecture -----------------
+    // ----------------- SLIDE 6: RESEARCH AND REFERENCES -----------------
     {
       id: 6,
-      tag: 'Engineering & Infrastructure',
-      title: 'System Architecture & Real-Time Pipeline',
-      subtitle: 'Scalable multi-tier design incorporating WIS 2.0, LLM RAG, GIS mapping, and PWA delivery',
+      tag: 'SIH Template Slide 6',
+      title: 'RESEARCH AND REFERENCES',
+      subtitle: 'Technical Standards, Meteorological Frameworks & Repository Links',
       speakerNotes:
-        'Our architecture is divided into four clean tiers: Ingestion via WIS 2.0 / MQTT and weather APIs, a high-throughput Node.js/FastAPI backend, an AI query understanding engine with domain tool calling to prevent hallucinations, and our responsive PWA frontend with interactive Leaflet GIS.',
+        'Slide 6 concludes our official presentation with standard references from IMD, WMO, OASIS, and MoES, along with our working prototype repository link.',
       content: (
-        <div className="h-full flex flex-col justify-between space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
-            {/* Tier 1 */}
-            <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 flex flex-col justify-between">
-              <div>
-                <div className="mono text-[10px] uppercase tracking-wider text-[hsl(var(--accent))] font-bold">
-                  Tier 1: Telemetry Ingestion
-                </div>
-                <h4 className="font-bold text-sm mt-1 text-[hsl(var(--foreground))]">Meteorological Feeds</h4>
-                <ul className="mt-3 space-y-2 text-[11px] text-[hsl(var(--muted-foreground))]">
-                  <li className="flex items-center gap-1.5">
-                    <Radio className="h-3 w-3 text-[hsl(var(--primary))]" /> WIS 2.0 / MQTT standard
-                  </li>
-                  <li className="flex items-center gap-1.5">
-                    <Cpu className="h-3 w-3 text-[hsl(var(--primary))]" /> GFS (0.25°) & WRF NWP Grids
-                  </li>
-                  <li className="flex items-center gap-1.5">
-                    <ShieldAlert className="h-3 w-3 text-[#9c3d2b]" /> IMD CAP v1.2 Warning Feed
-                  </li>
-                  <li className="flex items-center gap-1.5">
-                    <CloudSun className="h-3 w-3 text-[hsl(var(--accent))]" /> Automatic Weather Stations (AWS)
-                  </li>
-                </ul>
-              </div>
-              <div className="mt-3 rounded-lg bg-[hsl(var(--secondary)/.7)] p-2 text-[10px] text-center font-semibold">
-                Real-time data synchronization
-              </div>
+        <div className="h-full flex flex-col justify-between space-y-3.5">
+          <h4 className="font-bold text-xs text-[hsl(var(--foreground))] flex items-center gap-2">
+            <BookOpen className="h-4 w-4 text-[hsl(var(--primary))]" />
+            • Details / Links of the reference and research work:
+          </h4>
+
+          <div className="grid sm:grid-cols-2 gap-3 text-xs">
+            <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3">
+              <span className="font-bold text-xs text-[hsl(var(--primary))] block">India Meteorological Department (IMD) - NWP Models</span>
+              <p className="text-[11px] text-[hsl(var(--muted-foreground))] mt-1">Operational runs of Global Forecast System (GFS 0.25°) and WRF mesoscale forecasting.</p>
+              <span className="mono text-[10px] text-[hsl(var(--accent))] mt-1 block">Reference: https://mausam.imd.gov.in</span>
             </div>
 
-            {/* Tier 2 */}
-            <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 flex flex-col justify-between">
-              <div>
-                <div className="mono text-[10px] uppercase tracking-wider text-[hsl(var(--primary))] font-bold">
-                  Tier 2: Backend & Database
-                </div>
-                <h4 className="font-bold text-sm mt-1 text-[hsl(var(--foreground))]">FastAPI / Node.js Engine</h4>
-                <ul className="mt-3 space-y-2 text-[11px] text-[hsl(var(--muted-foreground))]">
-                  <li className="flex items-center gap-1.5">
-                    <Zap className="h-3 w-3 text-[hsl(var(--accent))]" /> High-concurrency async router
-                  </li>
-                  <li className="flex items-center gap-1.5">
-                    <Database className="h-3 w-3 text-[hsl(var(--primary))]" /> PostgreSQL + Drizzle ORM
-                  </li>
-                  <li className="flex items-center gap-1.5">
-                    <Clock className="h-3 w-3 text-[hsl(var(--primary))]" /> Redis / in-memory cache layer
-                  </li>
-                  <li className="flex items-center gap-1.5">
-                    <CheckCircle2 className="h-3 w-3 text-emerald-600" /> OpenAPI / Zod schema validation
-                  </li>
-                </ul>
-              </div>
-              <div className="mt-3 rounded-lg bg-[hsl(var(--secondary)/.7)] p-2 text-[10px] text-center font-semibold">
-                Sub-second response latency
-              </div>
+            <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3">
+              <span className="font-bold text-xs text-[hsl(var(--primary))] block">World Meteorological Organization (WMO) - WIS 2.0</span>
+              <p className="text-[11px] text-[hsl(var(--muted-foreground))] mt-1">WMO Information System 2.0 architecture and MQTT pub/sub data exchange standards.</p>
+              <span className="mono text-[10px] text-[hsl(var(--accent))] mt-1 block">Reference: https://wmo.int</span>
             </div>
 
-            {/* Tier 3 */}
-            <div className="rounded-xl border border-[hsl(var(--accent)/.4)] bg-[hsl(var(--accent)/.05)] p-4 flex flex-col justify-between">
-              <div>
-                <div className="mono text-[10px] uppercase tracking-wider text-[hsl(var(--accent))] font-bold">
-                  Tier 3: AI Query Engine
-                </div>
-                <h4 className="font-bold text-sm mt-1 text-[hsl(var(--foreground))]">Grounded LLM RAG</h4>
-                <ul className="mt-3 space-y-2 text-[11px] text-[hsl(var(--muted-foreground))]">
-                  <li className="flex items-center gap-1.5">
-                    <Sparkles className="h-3 w-3 text-[hsl(var(--accent))]" /> Intent & entity extraction
-                  </li>
-                  <li className="flex items-center gap-1.5">
-                    <Target className="h-3 w-3 text-[hsl(var(--accent))]" /> Function calling to live tools
-                  </li>
-                  <li className="flex items-center gap-1.5">
-                    <ShieldCheck className="h-3 w-3 text-emerald-600" /> Hallucination guardrails
-                  </li>
-                  <li className="flex items-center gap-1.5">
-                    <Globe className="h-3 w-3 text-[hsl(var(--primary))]" /> Multilingual Indian translation
-                  </li>
-                </ul>
-              </div>
-              <div className="mt-3 rounded-lg bg-[hsl(var(--accent)/.15)] p-2 text-[10px] text-center font-bold text-[hsl(var(--accent))]">
-                Factual meteorological truth
-              </div>
+            <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3">
+              <span className="font-bold text-xs text-[hsl(var(--primary))] block">OASIS Common Alerting Protocol (CAP v1.2)</span>
+              <p className="text-[11px] text-[hsl(var(--muted-foreground))] mt-1">International standard for exchanging public emergency warnings across multi-hazard systems.</p>
+              <span className="mono text-[10px] text-[hsl(var(--accent))] mt-1 block">Reference: https://docs.oasis-open.org/emergency/cap/v1.2</span>
             </div>
 
-            {/* Tier 4 */}
-            <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 flex flex-col justify-between">
-              <div>
-                <div className="mono text-[10px] uppercase tracking-wider text-emerald-600 font-bold">
-                  Tier 4: Presentation & PWA
-                </div>
-                <h4 className="font-bold text-sm mt-1 text-[hsl(var(--foreground))]">Web + PWA Client</h4>
-                <ul className="mt-3 space-y-2 text-[11px] text-[hsl(var(--muted-foreground))]">
-                  <li className="flex items-center gap-1.5">
-                    <Smartphone className="h-3 w-3 text-emerald-600" /> React 19 + Tailwind + Vite
-                  </li>
-                  <li className="flex items-center gap-1.5">
-                    <MapIcon className="h-3 w-3 text-[hsl(var(--primary))]" /> Leaflet GIS interactive map
-                  </li>
-                  <li className="flex items-center gap-1.5">
-                    <BarChart3 className="h-3 w-3 text-[hsl(var(--accent))]" /> Recharts climate trends
-                  </li>
-                  <li className="flex items-center gap-1.5">
-                    <Mic className="h-3 w-3 text-[hsl(var(--primary))]" /> Web Speech API (Voice STT/TTS)
-                  </li>
-                </ul>
-              </div>
-              <div className="mt-3 rounded-lg bg-emerald-500/15 p-2 text-[10px] text-center font-semibold text-emerald-700 dark:text-emerald-300">
-                Offline-capable & Installable
-              </div>
+            <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3">
+              <span className="font-bold text-xs text-[hsl(var(--primary))] block">Ministry of Earth Sciences (MoES) & NDMA</span>
+              <p className="text-[11px] text-[hsl(var(--muted-foreground))] mt-1">National Monsoon Mission frameworks, HPC clusters, and disaster evacuation SOPs.</p>
+              <span className="mono text-[10px] text-[hsl(var(--accent))] mt-1 block">Reference: https://moes.gov.in · https://ndma.gov.in</span>
             </div>
           </div>
 
-          <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <span className="grid h-8 w-8 place-items-center rounded-lg bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] font-bold text-xs">
-                K8s
-              </span>
-              <div>
-                <p className="text-xs font-bold text-[hsl(var(--foreground))]">Deployment & Scalability</p>
-                <p className="text-[11px] text-[hsl(var(--muted-foreground))]">
-                  Docker containerized · Kubernetes cluster deployment ready · Stateless microservice scaling
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 text-xs font-bold">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Edge CDN & Cache Optimized</span>
-            </div>
-          </div>
-        </div>
-      ),
-    },
-
-    // ----------------- SLIDE 7: High-Impact Use Cases -----------------
-    {
-      id: 7,
-      tag: 'Grassroots & Strategic Value',
-      title: 'High-Impact Use Cases Across India',
-      subtitle: 'From rural farmers in drylands to airline pilots and disaster rescue forces',
-      speakerNotes:
-        'WeatherGPT solves real problems for five distinct sectors. For farmers, it gives localized spray and harvest advice in their native tongue. For aviation, it decodes complex METAR/TAF briefs. For disaster coordinators, it gives instant cyclone evacuation plans.',
-      content: (
-        <div className="h-full flex flex-col justify-between space-y-4">
-          <div className="grid md:grid-cols-3 gap-4">
-            {/* Use Case 1 */}
-            <div className="rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-5 shadow-sm">
-              <div className="flex items-center justify-between">
-                <span className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400">
-                  <Sprout className="h-5 w-5" />
-                </span>
-                <span className="mono text-[10px] font-bold text-emerald-600 uppercase">Agriculture</span>
-              </div>
-              <h3 className="font-bold text-base mt-3 text-[hsl(var(--foreground))]">Farmers & Crop Advisories</h3>
-              <p className="mt-2 text-xs text-[hsl(var(--muted-foreground))] leading-relaxed">
-                "Can I spray pesticide on my cotton crop today?"
-              </p>
-              <div className="mt-3 rounded-xl bg-[hsl(var(--secondary)/.5)] p-3 text-xs leading-relaxed text-[hsl(var(--foreground)/.85)]">
-                <strong>WeatherGPT Action:</strong> Evaluates wind speeds (&lt;15 km/h required for drift prevention) and 48-hr rain risk. Answers via Hindi voice: <em>"आज दोपहर 2 बजे के बाद छिड़काव न करें, तेज हवाएं चलेंगी।"</em>
-              </div>
-            </div>
-
-            {/* Use Case 2 */}
-            <div className="rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-5 shadow-sm">
-              <div className="flex items-center justify-between">
-                <span className="grid h-10 w-10 place-items-center rounded-xl bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-400">
-                  <Navigation className="h-5 w-5" />
-                </span>
-                <span className="mono text-[10px] font-bold text-blue-600 uppercase">Aviation</span>
-              </div>
-              <h3 className="font-bold text-base mt-3 text-[hsl(var(--foreground))]">Aviation Weather Briefings</h3>
-              <p className="mt-2 text-xs text-[hsl(var(--muted-foreground))] leading-relaxed">
-                Automated decoding of raw METAR, TAF, and convective SIGMETs.
-              </p>
-              <div className="mt-3 rounded-xl bg-[hsl(var(--secondary)/.5)] p-3 text-xs leading-relaxed text-[hsl(var(--foreground)/.85)]">
-                <strong>WeatherGPT Action:</strong> Instant translation of cryptic airport codes into pilot-friendly briefs: crosswind components, cloud base ceiling, convective storm cells along flight corridors.
-              </div>
-            </div>
-
-            {/* Use Case 3 */}
-            <div className="rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-5 shadow-sm">
-              <div className="flex items-center justify-between">
-                <span className="grid h-10 w-10 place-items-center rounded-xl bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-400">
-                  <ShieldAlert className="h-5 w-5" />
-                </span>
-                <span className="mono text-[10px] font-bold text-red-600 uppercase">Disaster NDRF / SDMA</span>
-              </div>
-              <h3 className="font-bold text-base mt-3 text-[hsl(var(--foreground))]">Flood & Cyclone Warnings</h3>
-              <p className="mt-2 text-xs text-[hsl(var(--muted-foreground))] leading-relaxed">
-                Emergency response dissemination for district administration & NDRF.
-              </p>
-              <div className="mt-3 rounded-xl bg-[hsl(var(--secondary)/.5)] p-3 text-xs leading-relaxed text-[hsl(var(--foreground)/.85)]">
-                <strong>WeatherGPT Action:</strong> Color-coded Red/Orange warning cards with hourly precipitation accumulation rates, storm surge predictions, and rapid shelter evacuation checklists.
-              </div>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 flex items-start gap-3">
-              <span className="grid h-9 w-9 place-items-center rounded-lg bg-[hsl(var(--accent)/.15)] text-[hsl(var(--accent))] shrink-0">
-                <CloudRain className="h-5 w-5" />
-              </span>
-              <div>
-                <h4 className="font-bold text-xs text-[hsl(var(--foreground))]">Smart Cities & Municipal Bodies</h4>
-                <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
-                  Urban heat island monitoring, microclimate alerts, and localized stormwater drainage warnings for civic maintenance teams.
-                </p>
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 flex items-start gap-3">
-              <span className="grid h-9 w-9 place-items-center rounded-lg bg-[hsl(var(--primary)/.15)] text-[hsl(var(--primary))] shrink-0">
-                <BarChart3 className="h-5 w-5" />
-              </span>
-              <div>
-                <h4 className="font-bold text-xs text-[hsl(var(--foreground))]">Climate Analytics for Researchers</h4>
-                <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
-                  Decadal anomaly tracking, monsoon onset shifts, drought vulnerability metrics, and climate change pattern inspection.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      ),
-    },
-
-    // ----------------- SLIDE 8: Evaluation Parameters Scorecard -----------------
-    {
-      id: 8,
-      tag: 'Benchmarking & Criteria',
-      title: 'SIH Evaluation Parameters Alignment',
-      subtitle: 'Rigorous 10/10 compliance across every official judging parameter',
-      speakerNotes:
-        'When the internal panel evaluates our project, this matrix maps directly to the official SIH scoring sheet: Accuracy, latency, multilingual reach, UI accessibility, scalability, real-time integration, and voice interaction.',
-      content: (
-        <div className="h-full flex flex-col justify-between space-y-4">
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-3">
-              <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3.5 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 font-bold text-xs text-[hsl(var(--foreground))]">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                    <span>1. Accuracy and Relevance</span>
-                  </div>
-                  <span className="mono text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded">High Fidelity</span>
-                </div>
-                <p className="mt-1 text-[11px] text-[hsl(var(--muted-foreground))]">
-                  Direct grounding in live IMD & NWP telemetry; RAG tool-calling prevents LLM hallucinations; verified by meteorological parameter ranges.
-                </p>
-              </div>
-
-              <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3.5 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 font-bold text-xs text-[hsl(var(--foreground))]">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                    <span>2. Response Latency</span>
-                  </div>
-                  <span className="mono text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded">&lt; 800ms API</span>
-                </div>
-                <p className="mt-1 text-[11px] text-[hsl(var(--muted-foreground))]">
-                  Streaming LLM token generation, intelligent query caching, lightweight bundle (&lt;300KB gzip), and asynchronous API architecture.
-                </p>
-              </div>
-
-              <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3.5 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 font-bold text-xs text-[hsl(var(--foreground))]">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                    <span>3. Multilingual Capability</span>
-                  </div>
-                  <span className="mono text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded">8+ Indian Languages</span>
-                </div>
-                <p className="mt-1 text-[11px] text-[hsl(var(--muted-foreground))]">
-                  Understands and generates natural dialogues in Hindi, Marathi, Bengali, Tamil, Telugu, English with regional colloquial awareness.
-                </p>
-              </div>
-
-              <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3.5 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 font-bold text-xs text-[hsl(var(--foreground))]">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                    <span>4. UI and Accessibility</span>
-                  </div>
-                  <span className="mono text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded">WCAG AA + PWA</span>
-                </div>
-                <p className="mt-1 text-[11px] text-[hsl(var(--muted-foreground))]">
-                  High contrast design tokens, clear typography, screen-reader support, mobile-first responsive layout, and PWA standalone experience.
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3.5 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 font-bold text-xs text-[hsl(var(--foreground))]">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                    <span>5. Scalability & Innovation</span>
-                  </div>
-                  <span className="mono text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded">Docker / K8s Ready</span>
-                </div>
-                <p className="mt-1 text-[11px] text-[hsl(var(--muted-foreground))]">
-                  Microservices pattern, stateless API endpoints, WIS 2.0 MQTT protocol compliance, capable of scaling to millions of concurrent citizen queries.
-                </p>
-              </div>
-
-              <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3.5 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 font-bold text-xs text-[hsl(var(--foreground))]">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                    <span>6. Real-Time Meteorological Integration</span>
-                  </div>
-                  <span className="mono text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded">End-to-End Synced</span>
-                </div>
-                <p className="mt-1 text-[11px] text-[hsl(var(--muted-foreground))]">
-                  Direct connection with live observation feeds, NWP model forecasts, and dynamic Leaflet GIS markers reflecting active state warnings.
-                </p>
-              </div>
-
-              <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-3.5 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 font-bold text-xs text-[hsl(var(--foreground))]">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                    <span>7. Voice Interaction for Rural Accessibility</span>
-                  </div>
-                  <span className="mono text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded">Mic STT + TTS Audio</span>
-                </div>
-                <p className="mt-1 text-[11px] text-[hsl(var(--muted-foreground))]">
-                  Web Speech API voice transcription allows non-literate farmers to speak their questions into their phones and hear spoken advisories.
-                </p>
-              </div>
-
-              <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 flex items-center justify-between">
-                <div>
-                  <span className="text-xs font-bold text-emerald-800 dark:text-emerald-200">Overall Panel Readiness Score</span>
-                  <p className="text-[10px] text-emerald-700/80 dark:text-emerald-300/80">Every parameter backed by working software in this build.</p>
-                </div>
-                <span className="display text-2xl font-black text-emerald-700 dark:text-emerald-300">100%</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      ),
-    },
-
-    // ----------------- SLIDE 9: Working Prototype Highlights -----------------
-    {
-      id: 9,
-      tag: 'Live Demonstration Guide',
-      title: 'Working Prototype Walkthrough',
-      subtitle: 'Seamlessly transition from this presentation deck into any active feature in the prototype',
-      speakerNotes:
-        'We now invite the panel to examine the working prototype. Every feature described is live and testable right now across our 6 core sections.',
-      content: (
-        <div className="h-full flex flex-col justify-between space-y-4">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-            <Link
-              href="/"
-              className="group rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 shadow-sm hover:border-[hsl(var(--primary))] hover:shadow-md transition-all flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center justify-between">
-                  <div className="grid h-8 w-8 place-items-center rounded-lg bg-[hsl(var(--primary)/.1)] text-[hsl(var(--primary))]">
-                    <Compass className="h-4 w-4" />
-                  </div>
-                  <span className="flex items-center gap-1 text-[10px] font-bold text-[hsl(var(--primary))] group-hover:underline">
-                    Test Live <ArrowUpRight className="h-3 w-3" />
-                  </span>
-                </div>
-                <h4 className="font-bold text-sm mt-2.5 text-[hsl(var(--foreground))]">Weather Desk</h4>
-                <p className="mt-1 text-[11px] text-[hsl(var(--muted-foreground))]">
-                  Live multi-metric weather overview, hourly forecasts, 7-day outlook, and instant district search.
-                </p>
-              </div>
-              <div className="mt-3 text-[10px] font-semibold text-[hsl(var(--accent))]">Route: /</div>
-            </Link>
-
-            <Link
-              href="/ask"
-              className="group rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 shadow-sm hover:border-[hsl(var(--accent))] hover:shadow-md transition-all flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center justify-between">
-                  <div className="grid h-8 w-8 place-items-center rounded-lg bg-[hsl(var(--accent)/.15)] text-[hsl(var(--accent))]">
-                    <MessageCircle className="h-4 w-4" />
-                  </div>
-                  <span className="flex items-center gap-1 text-[10px] font-bold text-[hsl(var(--accent))] group-hover:underline">
-                    Test Live <ArrowUpRight className="h-3 w-3" />
-                  </span>
-                </div>
-                <h4 className="font-bold text-sm mt-2.5 text-[hsl(var(--foreground))]">Ask WeatherGPT</h4>
-                <p className="mt-1 text-[11px] text-[hsl(var(--muted-foreground))]">
-                  Natural language chat with voice input, suggested prompts, and multilingual language switcher.
-                </p>
-              </div>
-              <div className="mt-3 text-[10px] font-semibold text-[hsl(var(--accent))]">Route: /ask</div>
-            </Link>
-
-            <Link
-              href="/alerts"
-              className="group rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 shadow-sm hover:border-[#9c3d2b] hover:shadow-md transition-all flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center justify-between">
-                  <div className="grid h-8 w-8 place-items-center rounded-lg bg-[#9c3d2b]/10 text-[#9c3d2b]">
-                    <ShieldAlert className="h-4 w-4" />
-                  </div>
-                  <span className="flex items-center gap-1 text-[10px] font-bold text-[#9c3d2b] group-hover:underline">
-                    Test Live <ArrowUpRight className="h-3 w-3" />
-                  </span>
-                </div>
-                <h4 className="font-bold text-sm mt-2.5 text-[hsl(var(--foreground))]">Alert Center</h4>
-                <p className="mt-1 text-[11px] text-[hsl(var(--muted-foreground))]">
-                  Color-coded CAP severe weather bulletins (Red/Orange/Yellow) with immediate actionable safety steps.
-                </p>
-              </div>
-              <div className="mt-3 text-[10px] font-semibold text-[hsl(var(--accent))]">Route: /alerts</div>
-            </Link>
-
-            <Link
-              href="/map"
-              className="group rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 shadow-sm hover:border-[hsl(var(--primary))] hover:shadow-md transition-all flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center justify-between">
-                  <div className="grid h-8 w-8 place-items-center rounded-lg bg-[hsl(var(--primary)/.1)] text-[hsl(var(--primary))]">
-                    <MapIcon className="h-4 w-4" />
-                  </div>
-                  <span className="flex items-center gap-1 text-[10px] font-bold text-[hsl(var(--primary))] group-hover:underline">
-                    Test Live <ArrowUpRight className="h-3 w-3" />
-                  </span>
-                </div>
-                <h4 className="font-bold text-sm mt-2.5 text-[hsl(var(--foreground))]">Signal Map</h4>
-                <p className="mt-1 text-[11px] text-[hsl(var(--muted-foreground))]">
-                  Interactive GIS map with Leaflet showing geo-located active weather signals and severity markers across India.
-                </p>
-              </div>
-              <div className="mt-3 text-[10px] font-semibold text-[hsl(var(--accent))]">Route: /map</div>
-            </Link>
-
-            <Link
-              href="/climate"
-              className="group rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 shadow-sm hover:border-[hsl(var(--primary))] hover:shadow-md transition-all flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center justify-between">
-                  <div className="grid h-8 w-8 place-items-center rounded-lg bg-[hsl(var(--primary)/.1)] text-[hsl(var(--primary))]">
-                    <BarChart3 className="h-4 w-4" />
-                  </div>
-                  <span className="flex items-center gap-1 text-[10px] font-bold text-[hsl(var(--primary))] group-hover:underline">
-                    Test Live <ArrowUpRight className="h-3 w-3" />
-                  </span>
-                </div>
-                <h4 className="font-bold text-sm mt-2.5 text-[hsl(var(--foreground))]">Climate Lens</h4>
-                <p className="mt-1 text-[11px] text-[hsl(var(--muted-foreground))]">
-                  Historical climate trends, rainfall variance against normal baselines, and temperature shift curves.
-                </p>
-              </div>
-              <div className="mt-3 text-[10px] font-semibold text-[hsl(var(--accent))]">Route: /climate</div>
-            </Link>
-
-            <Link
-              href="/advisory"
-              className="group rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 shadow-sm hover:border-emerald-600 hover:shadow-md transition-all flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center justify-between">
-                  <div className="grid h-8 w-8 place-items-center rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400">
-                    <Leaf className="h-4 w-4" />
-                  </div>
-                  <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 group-hover:underline">
-                    Test Live <ArrowUpRight className="h-3 w-3" />
-                  </span>
-                </div>
-                <h4 className="font-bold text-sm mt-2.5 text-[hsl(var(--foreground))]">Field Advisory</h4>
-                <p className="mt-1 text-[11px] text-[hsl(var(--muted-foreground))]">
-                  Targeted intelligence for Farming windows, Travel visibility briefs, and Disaster response plans.
-                </p>
-              </div>
-              <div className="mt-3 text-[10px] font-semibold text-[hsl(var(--accent))]">Route: /advisory</div>
-            </Link>
-          </div>
-
-          <div className="rounded-xl border border-[hsl(var(--accent)/.4)] bg-[hsl(var(--accent)/.08)] p-3 text-xs flex items-center justify-between">
-            <span className="text-[hsl(var(--foreground)/.85)]">
-              💡 <strong>Presenter Tip:</strong> Click any of the boxes above to demonstrate the real features directly to the judges, then return to this presentation deck at any time.
-            </span>
-            <span className="mono text-[10px] text-[hsl(var(--accent))] font-bold uppercase tracking-wider">Live & Functional</span>
-          </div>
-        </div>
-      ),
-    },
-
-    // ----------------- SLIDE 10: Roadmap & Conclusion -----------------
-    {
-      id: 10,
-      tag: 'The Path Forward',
-      title: 'Roadmap, Scalability & Conclusion',
-      subtitle: 'Taking WeatherGPT from SIH Prototype to National Deployment with MoES',
-      speakerNotes:
-        'In conclusion, WeatherGPT successfully addresses every mandate of Problem Statement 26068. We are ready to scale this into a national utility for the Ministry of Earth Sciences. We are now open for questions from our distinguished panel.',
-      content: (
-        <div className="h-full flex flex-col justify-between space-y-4">
-          <div className="grid md:grid-cols-3 gap-4">
-            <div className="rounded-2xl border border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-950/20 p-5">
-              <div className="mono text-[10px] font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">
-                Phase 1: Working Today
-              </div>
-              <h4 className="font-bold text-sm mt-1 text-[hsl(var(--foreground))]">Prototype Operational</h4>
-              <ul className="mt-3 space-y-2 text-xs text-[hsl(var(--muted-foreground))]">
-                <li className="flex items-center gap-1.5">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" /> Full PWA web application
-                </li>
-                <li className="flex items-center gap-1.5">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" /> Grounded conversational agent
-                </li>
-                <li className="flex items-center gap-1.5">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" /> Interactive Leaflet GIS map
-                </li>
-                <li className="flex items-center gap-1.5">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" /> Web Speech voice recognition
-                </li>
-              </ul>
-            </div>
-
-            <div className="rounded-2xl border border-[hsl(var(--accent)/.3)] bg-[hsl(var(--accent)/.06)] p-5">
-              <div className="mono text-[10px] font-bold text-[hsl(var(--accent))] uppercase tracking-wider">
-                Phase 2: Pre-Grand Finale
-              </div>
-              <h4 className="font-bold text-sm mt-1 text-[hsl(var(--foreground))]">Enhanced Multi-Channel</h4>
-              <ul className="mt-3 space-y-2 text-xs text-[hsl(var(--muted-foreground))]">
-                <li className="flex items-center gap-1.5">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--accent))]" /> Live WIS 2.0 MQTT broker ingestion
-                </li>
-                <li className="flex items-center gap-1.5">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--accent))]" /> Doppler Weather Radar (DWR) composite
-                </li>
-                <li className="flex items-center gap-1.5">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--accent))]" /> WhatsApp & Telegram conversational bots
-                </li>
-                <li className="flex items-center gap-1.5">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--accent))]" /> Automated SMS flash flood alerts
-                </li>
-              </ul>
-            </div>
-
-            <div className="rounded-2xl border border-[hsl(var(--primary)/.3)] bg-[hsl(var(--primary)/.06)] p-5">
-              <div className="mono text-[10px] font-bold text-[hsl(var(--primary))] uppercase tracking-wider">
-                Phase 3: National Scale
-              </div>
-              <h4 className="font-bold text-sm mt-1 text-[hsl(var(--foreground))]">Pan-India Deployment</h4>
-              <ul className="mt-3 space-y-2 text-xs text-[hsl(var(--muted-foreground))]">
-                <li className="flex items-center gap-1.5">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--primary))]" /> MoES / IMD national data integration
-                </li>
-                <li className="flex items-center gap-1.5">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--primary))]" /> National Disaster Info System (NDMIS)
-                </li>
-                <li className="flex items-center gap-1.5">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--primary))]" /> LoRaWAN mesh fallback for zero-network zones
-                </li>
-                <li className="flex items-center gap-1.5">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--primary))]" /> District-level gram panchayat kiosks
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Team Members Showcase */}
-          <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 shadow-sm">
-            <div className="flex items-center justify-between mb-2.5 pb-2 border-b border-[hsl(var(--border))]">
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-[hsl(var(--accent))]" />
-                <span className="text-xs font-bold text-[hsl(var(--foreground))]">Project Team Members</span>
-              </div>
-              <span className="mono text-[10px] text-[hsl(var(--muted-foreground))]">Team WeatherGPT · SIH 2026</span>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-              {[
-                'Harsh Bhanandari',
-                'Tushar Sati',
-                'Hairn Bisht',
-                'Himani Gargoti',
-                'Vinay Joshi',
-                'Himanshi Devli',
-              ].map((member) => (
-                <div
-                  key={member}
-                  className="flex items-center gap-2 rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--secondary)/.45)] px-2.5 py-1.5"
-                >
-                  <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[hsl(var(--primary))] text-[10px] font-bold text-[hsl(var(--primary-foreground))]">
-                    {member.split(' ')[0][0]}
-                  </span>
-                  <span className="text-xs font-semibold text-[hsl(var(--foreground))] truncate">{member}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="rounded-2xl bg-[hsl(var(--sidebar))] text-[hsl(var(--sidebar-foreground))] p-6 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          {/* Prototype Link Card */}
+          <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
             <div>
-              <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                <span className="mono text-[10px] uppercase tracking-widest text-[hsl(var(--sidebar-primary))] font-bold">
-                  Smart India Hackathon 2026
-                </span>
-              </div>
-              <h3 className="display text-2xl font-bold mt-1">Thank You, Respected Panel Members</h3>
-              <p className="text-xs text-[hsl(var(--sidebar-foreground)/.7)] mt-1 max-w-xl">
-                WeatherGPT democratizes India’s meteorological intelligence — protecting lives, empowering farmers, and accelerating disaster response.
+              <span className="font-bold text-emerald-800 dark:text-emerald-200 text-sm flex items-center gap-1.5">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600" /> WeatherGPT Operational Prototype Repository
+              </span>
+              <p className="text-[11px] text-emerald-700/90 dark:text-emerald-300/90 mt-1">
+                Full source code, PWA service worker, Leaflet GIS mapping, conversational RAG, and Web Speech integration.
               </p>
             </div>
-            <div className="flex items-center gap-3 shrink-0">
-              <Link
-                href="/ask"
-                className="rounded-xl bg-[hsl(var(--sidebar-primary))] px-5 py-2.5 text-xs font-bold text-[hsl(var(--sidebar-primary-foreground))] shadow-md hover:opacity-90 transition-opacity"
-              >
-                Launch Live Prototype
-              </Link>
-            </div>
+            <a
+              href="https://github.com/satitushar26-tech/WeatherGPT"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-xs hover:bg-emerald-700 transition-colors flex items-center gap-1.5"
+            >
+              <span>GitHub Repository</span>
+              <ExternalLink className="h-3.5 w-3.5" />
+            </a>
           </div>
         </div>
       ),
     },
   ];
 
-  const totalSlides = slides.length;
+  const activeDeck = officialSlides;
+  const totalSlides = activeDeck.length;
 
   const handleNext = useCallback(() => {
     setCurrentSlide((prev) => (prev < totalSlides - 1 ? prev + 1 : prev));
@@ -1199,7 +558,7 @@ export function PresentationPage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleNext, handlePrev, totalSlides, viewMode]);
 
-  const activeSlide = slides[currentSlide];
+  const activeSlide = activeDeck[currentSlide];
 
   return (
     <div
@@ -1215,14 +574,14 @@ export function PresentationPage() {
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-bold text-sm sm:text-base text-[hsl(var(--foreground))]">
-                  WeatherGPT · Panel Pitch Deck
+                  WeatherGPT · SIH 2026 Official Idea PPT
                 </span>
                 <span className="rounded bg-[hsl(var(--accent)/.18)] px-1.5 py-0.5 text-[10px] font-bold text-[hsl(var(--accent))] uppercase">
-                  SIH 2026
+                  Template Compliant (6 Slides)
                 </span>
               </div>
               <p className="mono text-[10px] text-[hsl(var(--muted-foreground))]">
-                Problem Statement ID: 26068 · MoES & IMD
+                Problem Statement ID: 26068 · Ministry of Earth Sciences (MoES) / IMD
               </p>
             </div>
           </div>
@@ -1230,6 +589,29 @@ export function PresentationPage() {
 
         {/* Action Controls */}
         <div className="flex items-center flex-wrap gap-2">
+          {/* Official SIH Submission PDF Button */}
+          <a
+            href="/WeatherGPT_SIH2026_Official_Submission.pdf"
+            download="WeatherGPT_SIH2026_Official_Submission.pdf"
+            className="flex items-center gap-1.5 rounded-lg border border-red-500/40 bg-red-500/15 px-3 py-1.5 text-xs font-bold text-red-700 dark:text-red-300 hover:bg-red-500/25 transition-colors shadow-xs"
+            title="Download Official 6-Slide PDF (Portal Submission Ready)"
+          >
+            <Download className="h-3.5 w-3.5" />
+            <span>Official SIH PDF</span>
+          </a>
+
+          {/* Official SIH PPTX Button */}
+          <a
+            href="/WeatherGPT_SIH2026_Official_Submission.pptx"
+            download="WeatherGPT_SIH2026_Official_Submission.pptx"
+            className="flex items-center gap-1.5 rounded-lg border border-amber-500/40 bg-amber-500/15 px-3 py-1.5 text-xs font-bold text-amber-800 dark:text-amber-200 hover:bg-amber-500/25 transition-colors shadow-xs"
+            title="Download Official 6-Slide PPTX (Open in Google Slides & PowerPoint)"
+          >
+            <Download className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Official PPTX / Slides</span>
+            <span className="sm:hidden">PPTX</span>
+          </a>
+
           {/* View Mode Toggle */}
           <div className="flex rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-1">
             <button
@@ -1251,10 +633,10 @@ export function PresentationPage() {
                   ? 'bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]'
                   : 'text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]'
               }`}
-              title="All Slides Grid / Handout View"
+              title="All 6 Slides Grid View"
             >
               <Grid className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">All Slides</span>
+              <span className="hidden sm:inline">All 6 Slides</span>
             </button>
           </div>
 
@@ -1281,29 +663,6 @@ export function PresentationPage() {
             {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
           </button>
 
-          {/* Download PDF Button */}
-          <a
-            href="/WeatherGPT_SIH2026_Presentation.pdf"
-            download="WeatherGPT_SIH2026_Presentation.pdf"
-            className="flex items-center gap-1.5 rounded-lg border border-red-500/30 bg-red-500/10 px-2.5 py-1.5 text-xs font-bold text-red-600 hover:bg-red-500/20 transition-colors"
-            title="Download Presentation PDF"
-          >
-            <Download className="h-3.5 w-3.5" />
-            <span>PDF</span>
-          </a>
-
-          {/* Download PPTX / Google Slides Button */}
-          <a
-            href="/WeatherGPT_SIH2026_Presentation.pptx"
-            download="WeatherGPT_SIH2026_Presentation.pptx"
-            className="flex items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1.5 text-xs font-bold text-amber-600 hover:bg-amber-500/20 transition-colors"
-            title="Download PowerPoint PPTX (Import into Google Slides)"
-          >
-            <Download className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">PPTX / Google Slides</span>
-            <span className="sm:hidden">PPTX</span>
-          </a>
-
           {/* Print/Export */}
           <button
             onClick={() => window.print()}
@@ -1327,44 +686,48 @@ export function PresentationPage() {
       {viewMode === 'deck' ? (
         /* ------------------ DECK VIEW (1 SLIDE AT A TIME) ------------------ */
         <div className="mx-auto max-w-7xl flex flex-col items-center">
-          {/* Main Slide Card (16:9 Aspect ratio styled canvas) */}
-          <div className="relative w-full rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] shadow-xl overflow-hidden transition-all min-h-[580px] lg:min-h-[640px] flex flex-col justify-between p-6 sm:p-8 lg:p-10">
-            {/* Top Slide Accent Line (Tricolor) */}
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#ff9933] via-white to-[#138808]" />
-
-            {/* Slide Header */}
+          {/* Main Slide Card matching SIH Layout */}
+          <div className="relative w-full rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] shadow-xl overflow-hidden transition-all min-h-[560px] lg:min-h-[620px] flex flex-col justify-between p-6 sm:p-8 lg:p-10">
+            {/* Top Bar with Team Name oval & SIH Logo */}
             <div>
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <div className="flex items-center gap-2">
-                  <span className="mono rounded bg-[hsl(var(--secondary))] px-2 py-0.5 text-[11px] font-bold tracking-wider text-[hsl(var(--primary))] uppercase">
+              <div className="flex items-center justify-between gap-4 mb-4 border-b border-[hsl(var(--border))] pb-3">
+                {activeSlide.id > 1 ? (
+                  <div className="rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-3.5 py-1 text-xs font-bold text-[hsl(var(--foreground))] shadow-xs">
+                    {TEAM_NAME}
+                  </div>
+                ) : (
+                  <span className="mono rounded bg-[hsl(var(--secondary))] px-2.5 py-1 text-[11px] font-bold tracking-wider text-[hsl(var(--primary))] uppercase">
                     {activeSlide.tag}
                   </span>
-                </div>
-                <div className="mono text-xs font-bold text-[hsl(var(--muted-foreground))]">
-                  SLIDE {String(activeSlide.id).padStart(2, '0')} / {String(totalSlides).padStart(2, '0')}
+                )}
+
+                <div className="flex items-center gap-2">
+                  <span className="mono text-xs font-bold text-[hsl(var(--muted-foreground))]">
+                    SLIDE {activeSlide.id} OF 6
+                  </span>
+                  <div className="rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--secondary)/.5)] px-2.5 py-1 text-[10px] font-bold text-[hsl(var(--foreground))]">
+                    SIH 2026
+                  </div>
                 </div>
               </div>
 
-              <div className="mb-6">
-                <h2 className="display text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-[hsl(var(--foreground))]">
+              <div className="mb-5 text-center">
+                <h2 className="display text-2xl sm:text-3xl font-black tracking-tight text-[hsl(var(--foreground))]">
                   {activeSlide.title}
                 </h2>
-                <p className="mt-1.5 text-sm sm:text-base font-medium text-[hsl(var(--muted-foreground))]">
+                <p className="mt-1 text-xs sm:text-sm font-semibold text-[hsl(var(--primary))]">
                   {activeSlide.subtitle}
                 </p>
               </div>
             </div>
 
             {/* Slide Body Content */}
-            <div className="flex-1 py-2">{activeSlide.content}</div>
+            <div className="flex-1 py-1">{activeSlide.content}</div>
 
-            {/* Slide Footer Branding */}
-            <div className="mt-8 pt-4 border-t border-[hsl(var(--border))] flex items-center justify-between text-[11px] text-[hsl(var(--muted-foreground))]">
-              <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                <span>Smart India Hackathon 2026 · Problem 26068</span>
-              </div>
-              <div className="mono">Ministry of Earth Sciences (MoES) | IMD</div>
+            {/* Official SIH Template Bottom Banner */}
+            <div className="mt-6 -mx-6 -mb-6 sm:-mx-8 sm:-mb-8 lg:-mx-10 lg:-mb-10 bg-[#0d6efd] text-white px-6 py-2.5 flex items-center justify-between text-xs">
+              <span className="font-medium">@SIH Idea submission- Template</span>
+              <span className="font-bold">{activeSlide.id}</span>
             </div>
           </div>
 
@@ -1390,16 +753,16 @@ export function PresentationPage() {
               </button>
             </div>
 
-            {/* Slide Dots / Thumbnails Selector */}
-            <div className="flex items-center gap-1.5 flex-wrap">
-              {slides.map((s, index) => (
+            {/* Slide Dots Selector */}
+            <div className="flex items-center gap-2">
+              {activeDeck.map((s, index) => (
                 <button
                   key={s.id}
                   onClick={() => setCurrentSlide(index)}
-                  title={`Jump to Slide ${s.id}: ${s.title}`}
+                  title={`Slide ${s.id}: ${s.title}`}
                   className={`h-2.5 rounded-full transition-all ${
                     currentSlide === index
-                      ? 'w-7 bg-[hsl(var(--accent))]'
+                      ? 'w-8 bg-[#0d6efd]'
                       : 'w-2.5 bg-[hsl(var(--border))] hover:bg-[hsl(var(--muted-foreground))]'
                   }`}
                 />
@@ -1420,9 +783,9 @@ export function PresentationPage() {
               <div className="flex items-center justify-between pb-3 border-b border-[hsl(var(--border))]">
                 <div className="flex items-center gap-2 text-[hsl(var(--accent))] font-bold text-xs">
                   <BookOpen className="h-4 w-4" />
-                  <span>PRESENTER PITCH TALKING POINTS (SLIDE {activeSlide.id})</span>
+                  <span>PRESENTER PITCH NOTES (SLIDE {activeSlide.id} OF 6)</span>
                 </div>
-                <span className="mono text-[10px] text-[hsl(var(--muted-foreground))]">Guide for tomorrow's panel</span>
+                <span className="mono text-[10px] text-[hsl(var(--muted-foreground))]">Template pointer guidance for tomorrow</span>
               </div>
               <p className="mt-3 text-sm leading-relaxed text-[hsl(var(--foreground)/.9)]">
                 {activeSlide.speakerNotes}
@@ -1431,35 +794,45 @@ export function PresentationPage() {
           )}
         </div>
       ) : (
-        /* ------------------ GRID VIEW (ALL SLIDES VISIBLE FOR HANDOUT/SKIMMING) ------------------ */
+        /* ------------------ GRID VIEW (ALL 6 SLIDES VISIBLE FOR REVIEW) ------------------ */
         <div className="mx-auto max-w-7xl">
           <div className="mb-6 flex items-center justify-between">
-            <h3 className="display text-xl font-bold text-[hsl(var(--foreground))]">
-              All 10 Presentation Slides
-            </h3>
-            <span className="text-xs text-[hsl(var(--muted-foreground))]">
-              Click any slide to open in presentation mode
-            </span>
+            <div>
+              <h3 className="display text-xl font-bold text-[hsl(var(--foreground))]">
+                Official SIH 2026 Submission (All 6 Slides)
+              </h3>
+              <p className="text-xs text-[hsl(var(--muted-foreground))] mt-0.5">
+                Strictly adheres to maximum 6-slide limit and template pointers for portal upload
+              </p>
+            </div>
+            <a
+              href="/WeatherGPT_SIH2026_Official_Submission.pdf"
+              download="WeatherGPT_SIH2026_Official_Submission.pdf"
+              className="rounded-lg bg-red-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-red-700 transition-colors flex items-center gap-1.5"
+            >
+              <Download className="h-3.5 w-3.5" />
+              <span>Download Official PDF</span>
+            </a>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            {slides.map((s, index) => (
+            {activeDeck.map((s, index) => (
               <div
                 key={s.id}
                 onClick={() => {
                   setCurrentSlide(index);
                   setViewMode('deck');
                 }}
-                className="group cursor-pointer rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-6 shadow-sm hover:border-[hsl(var(--primary))] hover:shadow-lg transition-all flex flex-col justify-between min-h-[380px]"
+                className="group cursor-pointer rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-6 shadow-sm hover:border-[#0d6efd] hover:shadow-lg transition-all flex flex-col justify-between min-h-[380px]"
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="mono rounded bg-[hsl(var(--secondary))] px-2 py-0.5 text-[10px] font-bold text-[hsl(var(--primary))] uppercase">
-                      Slide {String(s.id).padStart(2, '0')} · {s.tag}
+                    <span className="mono rounded bg-[#0d6efd]/10 px-2 py-0.5 text-[10px] font-bold text-[#0d6efd] uppercase">
+                      Slide {s.id} of 6 · {s.tag}
                     </span>
-                    <ArrowUpRight className="h-4 w-4 text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--primary))] transition-colors" />
+                    <ArrowUpRight className="h-4 w-4 text-[hsl(var(--muted-foreground))] group-hover:text-[#0d6efd] transition-colors" />
                   </div>
-                  <h4 className="display text-lg font-bold text-[hsl(var(--foreground))] group-hover:text-[hsl(var(--primary))] transition-colors">
+                  <h4 className="display text-lg font-bold text-[hsl(var(--foreground))] group-hover:text-[#0d6efd] transition-colors">
                     {s.title}
                   </h4>
                   <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))] mb-4">{s.subtitle}</p>
@@ -1470,8 +843,8 @@ export function PresentationPage() {
                 </div>
 
                 <div className="mt-4 pt-3 border-t border-[hsl(var(--border))] flex items-center justify-between text-[10px] text-[hsl(var(--muted-foreground))]">
-                  <span>Click to present slide</span>
-                  <span className="font-bold text-[hsl(var(--accent))]">Slide {s.id} of 10</span>
+                  <span>Click to view in deck mode</span>
+                  <span className="font-bold text-[#0d6efd]">Slide {s.id} of 6</span>
                 </div>
               </div>
             ))}
