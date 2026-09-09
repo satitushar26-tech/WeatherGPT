@@ -35,14 +35,22 @@ interface InteractiveWeatherMapProps {
 }
 
 const INDIA_CENTER: [number, number] = [22.8, 82.0];
+// Official Survey of India sovereign extent (including J&K, Ladakh, Andaman & Nicobar, Lakshadweep)
 const INDIA_BOUNDS: [[number, number], [number, number]] = [
   [6.5, 68.0],
-  [37.5, 97.5],
+  [37.2, 97.4],
 ];
-const MAX_BOUNDS: [[number, number], [number, number]] = [
-  [4.0, 64.0],
-  [39.0, 100.0],
+// Rigid boundary hard-wall - absolute maximum perimeter beyond which panning/scrolling is prohibited
+const INDIA_MAX_BOUNDS: [[number, number], [number, number]] = [
+  [6.2, 67.8],
+  [37.4, 97.6],
 ];
+
+const MASK_COLORS: Record<string, string> = {
+  voyager: '#ded8ce',
+  light: '#e2e8f0',
+  dark: '#0a0f18',
+};
 
 export function InteractiveWeatherMap({
   alerts,
@@ -55,6 +63,7 @@ export function InteractiveWeatherMap({
   const mapCanvasRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const tileLayerRef = useRef<L.TileLayer | null>(null);
+  const worldMaskLayerRef = useRef<L.Polygon | null>(null);
   const boundaryLayerRef = useRef<L.GeoJSON | null>(null);
   const markersLayerRef = useRef<L.LayerGroup | null>(null);
   const radarLayerRef = useRef<L.LayerGroup | null>(null);
@@ -68,25 +77,47 @@ export function InteractiveWeatherMap({
   const [userLocating, setUserLocating] = useState(false);
   const [showThemeMenu, setShowThemeMenu] = useState(false);
 
-  // Initialize Leaflet map
+  // Initialize Leaflet map with impenetrable India bounds
   useEffect(() => {
     if (!mapCanvasRef.current || mapRef.current) return;
 
     const isMobile = window.innerWidth < 640;
-    const initialZoom = isMobile ? 4.2 : 4.8;
+    const initialZoom = isMobile ? 4.25 : 4.75;
 
     const map = L.map(mapCanvasRef.current, {
       center: INDIA_CENTER,
       zoom: initialZoom,
-      minZoom: 3.8,
+      minZoom: 3.6,
       maxZoom: 14,
-      maxBounds: MAX_BOUNDS,
-      maxBoundsViscosity: 0.85,
+      zoomSnap: 0.25,
+      zoomDelta: 0.5,
+      maxBounds: INDIA_MAX_BOUNDS,
+      maxBoundsViscosity: 1.0, // 100% impenetrable barrier - prohibits scrolling/dragging beyond India
+      bounceAtZoomLimits: false,
       zoomControl: false,
       attributionControl: false,
     });
 
     mapRef.current = map;
+
+    // Enforce dynamic minZoom matching container dimensions so user cannot zoom out beyond India
+    const updateMinZoomConstraint = () => {
+      if (!map) return;
+      const fitZoom = map.getBoundsZoom(INDIA_BOUNDS, true);
+      const safeMinZoom = Math.max(fitZoom - 0.25, 3.6);
+      map.setMinZoom(safeMinZoom);
+      if (map.getZoom() < safeMinZoom) {
+        map.setZoom(safeMinZoom);
+      }
+    };
+
+    updateMinZoomConstraint();
+    map.on('resize', updateMinZoomConstraint);
+
+    // Fit sovereign India cleanly within padding
+    map.fitBounds(INDIA_BOUNDS, {
+      padding: isMobile ? [12, 12] : [24, 24],
+    });
 
     // Tile Layer
     const theme = MAP_THEMES[activeTheme] || MAP_THEMES.voyager;
@@ -103,7 +134,7 @@ export function InteractiveWeatherMap({
     const radarGroup = L.layerGroup().addTo(map);
     radarLayerRef.current = radarGroup;
 
-    // Fetch and overlay official Survey of India boundary
+    // Fetch and overlay official Survey of India boundary & exterior mask
     fetch('/data/india-soi-boundary.json')
       .then((res) => {
         if (!res.ok) throw new Error('Boundary fetch failed');
@@ -111,13 +142,44 @@ export function InteractiveWeatherMap({
       })
       .then((geoJson) => {
         if (!mapRef.current) return;
+
+        // 1. Inverted World Mask (dims foreign areas outside India so focus is strictly Sovereign India)
+        const WORLD_RING: [number, number][] = [
+          [-85, -180],
+          [-85, 180],
+          [85, 180],
+          [85, -180],
+          [-85, -180],
+        ];
+
+        const indiaHoles: [number, number][][] = [];
+        if (geoJson.features && geoJson.features[0]?.geometry?.coordinates) {
+          geoJson.features[0].geometry.coordinates.forEach((poly: number[][][]) => {
+            if (poly && poly.length > 0 && poly[0].length >= 4) {
+              const ring: [number, number][] = poly[0].map((pt: number[]) => [pt[1], pt[0]]);
+              indiaHoles.push(ring);
+            }
+          });
+        }
+
+        if (indiaHoles.length > 0) {
+          const worldMask = L.polygon([WORLD_RING, ...indiaHoles], {
+            stroke: false,
+            fillColor: MASK_COLORS[activeTheme] || '#ded8ce',
+            fillOpacity: activeTheme === 'dark' ? 0.85 : 0.78,
+            interactive: false,
+          }).addTo(mapRef.current);
+          worldMaskLayerRef.current = worldMask;
+        }
+
+        // 2. Official Survey of India Sovereign Boundary line
         const boundary = L.geoJSON(geoJson, {
           style: {
             color: '#1f4e5b',
             weight: 2.4,
             opacity: 0.95,
             fillColor: '#1f4e5b',
-            fillOpacity: 0.035,
+            fillOpacity: 0.02,
             lineCap: 'round',
             lineJoin: 'round',
           },
@@ -136,6 +198,7 @@ export function InteractiveWeatherMap({
       map.remove();
       mapRef.current = null;
       tileLayerRef.current = null;
+      worldMaskLayerRef.current = null;
       boundaryLayerRef.current = null;
       markersLayerRef.current = null;
       radarLayerRef.current = null;
@@ -143,7 +206,7 @@ export function InteractiveWeatherMap({
     };
   }, []);
 
-  // Update Tile Theme
+  // Update Tile Theme & World Mask styling
   useEffect(() => {
     if (!mapRef.current) return;
     const theme = MAP_THEMES[activeTheme] || MAP_THEMES.voyager;
@@ -158,7 +221,16 @@ export function InteractiveWeatherMap({
     }).addTo(mapRef.current);
     tileLayerRef.current = newTileLayer;
 
-    // Keep boundary on top of tiles
+    // Update World Mask color and bring to front of tiles
+    if (worldMaskLayerRef.current) {
+      worldMaskLayerRef.current.setStyle({
+        fillColor: MASK_COLORS[activeTheme] || '#ded8ce',
+        fillOpacity: activeTheme === 'dark' ? 0.85 : 0.78,
+      });
+      worldMaskLayerRef.current.bringToFront();
+    }
+
+    // Keep boundary on top of mask
     if (boundaryLayerRef.current) {
       boundaryLayerRef.current.bringToFront();
     }
@@ -336,8 +408,9 @@ export function InteractiveWeatherMap({
   // Reset to India full extent
   const handleResetView = useCallback(() => {
     if (!mapRef.current) return;
+    const isMobile = window.innerWidth < 640;
     mapRef.current.fitBounds(INDIA_BOUNDS, {
-      padding: [25, 25],
+      padding: isMobile ? [12, 12] : [24, 24],
       animate: true,
       duration: 0.8,
     });
@@ -354,7 +427,7 @@ export function InteractiveWeatherMap({
     mapRef.current.zoomOut();
   }, []);
 
-  // Geolocation
+  // Geolocation strictly checked against Indian territory
   const handleLocateMe = useCallback(() => {
     if (!mapRef.current) return;
     if (!navigator.geolocation) {
@@ -370,6 +443,17 @@ export function InteractiveWeatherMap({
         const lng = pos.coords.longitude;
         const map = mapRef.current;
         if (!map) return;
+
+        // Verify detected coordinates are within India sovereign extent
+        if (
+          lat < INDIA_MAX_BOUNDS[0][0] ||
+          lat > INDIA_MAX_BOUNDS[1][0] ||
+          lng < INDIA_MAX_BOUNDS[0][1] ||
+          lng > INDIA_MAX_BOUNDS[1][1]
+        ) {
+          alert('Your detected location is outside India. The map view is locked strictly within Indian territory.');
+          return;
+        }
 
         if (userMarkerRef.current) {
           userMarkerRef.current.remove();
@@ -388,7 +472,7 @@ export function InteractiveWeatherMap({
         });
 
         userMarkerRef.current = userMarker;
-        map.flyTo([lat, lng], 8, { duration: 1.2 });
+        map.flyTo([lat, lng], Math.min(Math.max(map.getZoom(), 7), 10), { duration: 1.2 });
       },
       (err) => {
         setUserLocating(false);
@@ -399,7 +483,7 @@ export function InteractiveWeatherMap({
     );
   }, []);
 
-  // Fullscreen toggle with fallback
+  // Fullscreen toggle with fallback and bounds re-constraint
   const toggleFullscreen = useCallback(() => {
     setIsFullscreen((prev) => {
       const nextState = !prev;
@@ -415,12 +499,17 @@ export function InteractiveWeatherMap({
       return nextState;
     });
 
-    setTimeout(() => {
-      mapRef.current?.invalidateSize();
-    }, 100);
-    setTimeout(() => {
-      mapRef.current?.invalidateSize();
-    }, 350);
+    const updateConstraints = () => {
+      if (mapRef.current) {
+        mapRef.current.invalidateSize();
+        const fitZoom = mapRef.current.getBoundsZoom(INDIA_BOUNDS, true);
+        const safeMinZoom = Math.max(fitZoom - 0.25, 3.6);
+        mapRef.current.setMinZoom(safeMinZoom);
+      }
+    };
+
+    setTimeout(updateConstraints, 100);
+    setTimeout(updateConstraints, 350);
   }, []);
 
   // Listen for fullscreen change & Escape key
@@ -650,7 +739,7 @@ export function InteractiveWeatherMap({
             🇮🇳 Survey of India Sovereign Boundary
           </span>
           {boundaryLoaded && (
-            <span className="hidden md:inline-block text-[#5a9872] font-semibold">· Verified</span>
+            <span className="hidden md:inline-block text-[#5a9872] font-semibold">· Verified & Locked</span>
           )}
           {boundaryError && (
             <span className="text-[hsl(var(--destructive))]">· Fallback active</span>
@@ -658,7 +747,7 @@ export function InteractiveWeatherMap({
         </div>
 
         <div className="flex items-center gap-4 text-[9px]">
-          <span className="hidden sm:inline">Pinch to zoom · Tap signal to inspect</span>
+          <span className="hidden sm:inline">Locked to Indian Territory · Pinch to zoom</span>
           <span>&copy; OpenStreetMap · CARTO</span>
         </div>
       </div>
