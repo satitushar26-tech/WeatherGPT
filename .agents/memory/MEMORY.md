@@ -1,0 +1,1 @@
+- [SPA hash navigation](hash-navigation.md) — router-intercepted hash links need explicit scrolling because pushState does not trigger native fragment navigation.

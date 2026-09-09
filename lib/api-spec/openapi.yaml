@@ -1,0 +1,202 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: weather
+    description: Weather intelligence operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /weather/overview:
+    get:
+      operationId: getWeatherOverview
+      tags: [weather]
+      summary: Get the current weather intelligence overview
+      responses:
+        "200":
+          description: Current conditions, forecast, alerts, and trend data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WeatherOverview"
+  /weather/chat:
+    post:
+      operationId: askWeatherAssistant
+      tags: [weather]
+      summary: Ask WeatherGPT a natural language question
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WeatherChatInput"
+      responses:
+        "200":
+          description: Assistant response with relevant intelligence cards
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WeatherChatResponse"
+  /weather/alerts:
+    get:
+      operationId: getWeatherAlerts
+      tags: [weather]
+      summary: Get active weather and disaster alerts
+      responses:
+        "200":
+          description: Active alert list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WeatherAlert"
+  /weather/climate:
+    get:
+      operationId: getClimateTrends
+      tags: [weather]
+      summary: Get historical climate trend data
+      responses:
+        "200":
+          description: Rainfall and temperature trends
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClimateTrends"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    WeatherMetric:
+      type: object
+      properties:
+        label: { type: string }
+        value: { type: string }
+        detail: { type: string }
+        icon: { type: string }
+      required: [label, value, detail, icon]
+    ForecastDay:
+      type: object
+      properties:
+        day: { type: string }
+        date: { type: string }
+        icon: { type: string }
+        high: { type: integer }
+        low: { type: integer }
+        rainChance: { type: integer }
+        rainfall: { type: number }
+        condition: { type: string }
+      required: [day, date, icon, high, low, rainChance, rainfall, condition]
+    WeatherAlert:
+      type: object
+      properties:
+        id: { type: string }
+        type: { type: string }
+        severity: { type: string }
+        title: { type: string }
+        location: { type: string }
+        issued: { type: string }
+        expires: { type: string }
+        description: { type: string }
+        color: { type: string }
+      required: [id, type, severity, title, location, issued, expires, description, color]
+    ClimatePoint:
+      type: object
+      properties:
+        month: { type: string }
+        rainfall: { type: integer }
+        average: { type: integer }
+        temperature: { type: number }
+      required: [month, rainfall, average, temperature]
+    ClimateTrends:
+      type: object
+      properties:
+        location: { type: string }
+        period: { type: string }
+        rainfallChange: { type: number }
+        temperatureChange: { type: number }
+        points:
+          type: array
+          items: { $ref: "#/components/schemas/ClimatePoint" }
+      required: [location, period, rainfallChange, temperatureChange, points]
+    WeatherOverview:
+      type: object
+      properties:
+        location: { type: string }
+        region: { type: string }
+        updatedAt: { type: string }
+        temperature: { type: integer }
+        feelsLike: { type: integer }
+        condition: { type: string }
+        conditionIcon: { type: string }
+        high: { type: integer }
+        low: { type: integer }
+        rainChance: { type: integer }
+        humidity: { type: integer }
+        wind: { type: integer }
+        pressure: { type: integer }
+        visibility: { type: number }
+        uvIndex: { type: number }
+        metrics:
+          type: array
+          items: { $ref: "#/components/schemas/WeatherMetric" }
+        forecast:
+          type: array
+          items: { $ref: "#/components/schemas/ForecastDay" }
+        alerts:
+          type: array
+          items: { $ref: "#/components/schemas/WeatherAlert" }
+        climate: { $ref: "#/components/schemas/ClimateTrends" }
+      required: [location, region, updatedAt, temperature, feelsLike, condition, conditionIcon, high, low, rainChance, humidity, wind, pressure, visibility, uvIndex, metrics, forecast, alerts, climate]
+    WeatherChatInput:
+      type: object
+      properties:
+        message: { type: string, minLength: 1 }
+        language: { type: string }
+      required: [message]
+    WeatherChatResponse:
+      type: object
+      properties:
+        answer: { type: string }
+        intent: { type: string }
+        source: { type: string }
+        location: { type: string }
+        highlights:
+          type: array
+          items: { type: string }
+        advisory:
+          type: object
+          properties:
+            title: { type: string }
+            status: { type: string }
+            body: { type: string }
+            actions:
+              type: array
+              items: { type: string }
+          required: [title, status, body, actions]
+      required: [answer, intent, source, location, highlights]
+

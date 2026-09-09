@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "WeatherGPT"
+description = "A conversational weather intelligence platform for forecasts, disaster alerts, farmer advisories, climate trends, and multilingual voice-friendly guidance."
+version = "1.0.0"
+id = "artifacts/weather-gpt"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18602
+
+[services.development]
+run = "pnpm --filter @workspace/weather-gpt run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/weather-gpt", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/weather-gpt/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18602"
+BASE_PATH = "/"
